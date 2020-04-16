@@ -38,7 +38,7 @@ bool RemoteThreadInject(CString pName)
 	}
 
 	//2.申请内存,写入DLL路径
-	int nLen = strlen("C:\\Users\\Administrator\\Desktop\\test\\hookdll1.dll") + 1;
+	int nLen = strlen("C:\\Users\\Administrator\\Desktop\\test\\hookdll.dll") + 1;
 	LPVOID pBuf = VirtualAllocEx(hProcess, NULL, nLen, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE);
 	if (!pBuf)
 	{
@@ -47,7 +47,7 @@ bool RemoteThreadInject(CString pName)
 	}
 	//3.写入内存
 	SIZE_T dwWrite = 0;
-	if (!WriteProcessMemory(hProcess, pBuf, "C:\\Users\\Administrator\\Desktop\\test\\hookdll1.dll", nLen, &dwWrite))
+	if (!WriteProcessMemory(hProcess, pBuf, "C:\\Users\\Administrator\\Desktop\\test\\hookdll.dll", nLen, &dwWrite))
 	{
 		printf("写入内存失败！\n");
 		return false;
@@ -66,8 +66,8 @@ bool RemoteThreadInject(CString pName)
 
 int main()
 {
-	//RemoteThreadInject("MCComm.exe");
-	RemoteThreadInject("AWFInterpreter_vc80.exe");
+	RemoteThreadInject("MCComm.exe");
+	//RemoteThreadInject("AWFInterpreter_vc80.exe");
 	system("pause\n");
 	return 0;
 }

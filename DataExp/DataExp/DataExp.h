@@ -208,31 +208,36 @@ class VatBin {
 public:
 	VatBin(CString Path);
 
-	void printOneCfg(int addr,CString path = "C:\\Users\\admin\\Desktop\\testData.txt");
-	void printMenu(CString Path = "C:\\Users\\admin\\Desktop\\menu.txt");
-	void printOrinMenu(CString Path = "C:\\Users\\admin\\Desktop\\menu.txt");
-	void printXmenu(CString Path = "C:\\Users\\admin\\Desktop\\menu.txt");
-	void printState(CString Path = "C:\\Users\\admin\\Desktop\\StateTotalTab.txt");
-	void printStatePiece(CString Path = "C:\\Users\\admin\\Desktop\\StatePieceTab.txt");
-	void printStateLinkTab(CString Path = "C:\\Users\\admin\\Desktop\\StateLinkTab.txt");
-	void printDataSeg(CString PathData = "C:\\Users\\admin\\Desktop\\data.txt");
-	void printDataListSeg(CString Data1Path = "C:\\Users\\admin\\Desktop\\data1.txt");
-	void printVinInfo(CString path = "C:\\Users\\admin\\Desktop\\VinInfo.txt");
-	void printTotalStateData(CString path = "C:\\Users\\admin\\Desktop\\ToltalStates");
-	void printAggregatedStateData(CString path = "C:\\Users\\admin\\Desktop\\AggregatedStateData");
-	void TravMenuByName(int MenuAddr, CString name, CString path = "C:\\Users\\admin\\Desktop");//涉及递归,必须传地址
-	void printAllTypeOfData(CString path = "C:\\Users\\admin\\Desktop\\TypesOfData");
-	void printOneSpecialFuncByName(int TagDataType, CString name, CString path = "C:\\Users\\admin\\Desktop\\");
+	void printOneCfg(int addr,CString path = "C:\\Users\\Administrator\\Desktop\\testData.txt");
+	void printMenu(CString Path = "C:\\Users\\Administrator\\Desktop\\menu.txt");
+	void printOrinMenu(CString Path = "C:\\Users\\Administrator\\Desktop\\menu.txt");
+	void printXmenu(CString Path = "C:\\Users\\Administrator\\Desktop\\menu.txt");
+	void printState(CString Path = "C:\\Users\\Administrator\\Desktop\\StateTotalTab.txt");
+	void printStatePiece(CString Path = "C:\\Users\\Administrator\\Desktop\\StatePieceTab.txt");
+	void printStateLinkTab(CString Path = "C:\\Users\\Administrator\\Desktop\\StateLinkTab.txt");
+	void printDataSeg(CString PathData = "C:\\Users\\Administrator\\Desktop\\data.txt");
+	void printDataListSeg(CString Data1Path = "C:\\Users\\Administrator\\Desktop\\data1.txt");
+	void printVinInfo(CString path = "C:\\Users\\Administrator\\Desktop\\VinInfo.txt");
+	void printTotalStateData(CString path = "C:\\Users\\Administrator\\Desktop\\ToltalStates");
+	void printAggregatedStateData(CString path = "C:\\Users\\Administrator\\Desktop\\AggregatedStateData");
+	void TravMenuByName(int MenuAddr, CString name, CString path = "C:\\Users\\Administrator\\Desktop");//涉及递归,必须传地址
+	void printAllTypeOfData(CString path = "C:\\Users\\Administrator\\Desktop\\TypesOfData");
+	void printOneSpecialFuncByName(int TagDataType, CString name, CString path = "C:\\Users\\Administrator\\Desktop\\");
+
+
 	void Trace(int TagDataType, int MenuAddr, CString module, CString path, CString name);
-	void printOneSpecialFuncByNamePro(int TagDataType, int MenuAddr, CString name, CString module, CString path = "C:\\Users\\admin\\Desktop\\");
-	void printDtcLib(CString path = "C:\\Users\\admin\\Desktop\\DtcLib.txt");
-	void printDtcs(CString path = "C:\\Users\\admin\\Desktop\\Dtcs.txt");
+	void Trace1(int TagDataType, int MenuAddr, CString path, CString name);
+
+
+	void printOneSpecialFuncByNamePro(int TagDataType, int MenuAddr, CString name, CString path = "C:\\Users\\Administrator\\Desktop\\Gm Sepcial\\");
+	void printDtcLib(CString path = "C:\\Users\\Administrator\\Desktop\\DtcLib.txt");
+	void printDtcs(CString path = "C:\\Users\\Administrator\\Desktop\\Dtcs.txt");
 
 
 public:
 	void TravMenuToMenu(int addr, HANDLE hfile);
-	void TravMenuToMenu_Txt(CString path = "C:\\Users\\admin\\Desktop\\Menu_Txt.txt");
-	void ExpMenu(CString path1 = "C:\\Users\\admin\\Desktop\\MENU.TXT", CString path2 = "C:\\Users\\admin\\Desktop\\Menu_Txt.txt");
+	void TravMenuToMenu_Txt(CString path = "C:\\Users\\Administrator\\Desktop\\Menu_Txt.txt");
+	void ExpMenu(CString path1 = "C:\\Users\\admin\\Desktop\\MENU.TXT", CString path2 = "C:\\Users\\Administrator\\Desktop\\Menu_Txt.txt");
 
 public:
 	static void TravMenu(int MenuAddr, CString path);//遍历菜单

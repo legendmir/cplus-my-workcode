@@ -374,6 +374,10 @@ void VatBin::printOneSpecialFuncByName(int TagDataType,CString name, CString pat
 		pdata = new MDataNode(addr);
 		if (pdata->mType_1==TagDataType)
 		{
+			if (pdata->vecNode_4[2].mStr!="")
+			{
+				int cc = 0;
+			}
 			if (pdata->vecNode_4[2].mStrX == name)
 			{
 				CString csAddr;
@@ -419,12 +423,12 @@ void VatBin::Trace(int TagDataType, int MenuAddr, CString ModuleName,CString pat
 				for (size_t i = 0; i < vecResult.size(); i++)
 				{
 					xx = tRoutine;
-					xx.Replace("C:\\Users\\admin\\Desktop\\Engine Oil Life Reset\\", "");
+					xx.Replace("C:\\Users\\Administrator\\Desktop\\Engine Oil Life Reset\\", "");
 					buf.Format("%08X", GetFOA(vecResult[i]));
 					xx = buf + "_" + xx;
 					xx.Replace("VAT Release_Global_Diagnostics_", "");
 					xx.Replace("_Module Diagnostics_Engine Control Module", "");
-					tRoutine = "C:\\Users\\admin\\Desktop\\Engine Oil Life Reset\\" + xx;
+					tRoutine = "C:\\Users\\Administrator\\Desktop\\Engine Oil Life Reset\\" + xx;
 					hfile = GetFileHandle_W(tRoutine + ".txt");
 					DataConfiguration::WriteOneDataConfig(vecResult[i], hfile);
 					CloseHandle(hfile);
@@ -451,11 +455,62 @@ void VatBin::Trace(int TagDataType, int MenuAddr, CString ModuleName,CString pat
 	delete pmenu;
 }
 
-void VatBin::printOneSpecialFuncByNamePro(int TagDataType, int MenuAddr,CString module,CString name, CString path)
+
+void VatBin::Trace1(int TagDataType, int MenuAddr, CString path, CString name)
+{
+	MenuNode* pmenu = new MenuNode(MenuAddr);
+	int NextAddr = 0;
+	CString tRoutine;
+	tRoutine = path;
+	vector<int> vecResult;
+	for (size_t i = 0; i < pmenu->mConfigNum; i++)
+	{
+		if (pmenu->mConfigurations[i].mConfigType == 0xD)
+		{
+			DataConfiguration::GetOneFuncDataConfigByName(pmenu->mConfigurations[i].mConfigNode, TagDataType, name, vecResult);
+		}
+	}
+	CString buf;
+	HANDLE hfile;
+	CString xx;
+	for (size_t i = 0; i < vecResult.size(); i++)
+	{
+		xx = tRoutine;
+		CString ttt = "C:\\Users\\Administrator\\Desktop\\Gm Sepcial\\" + name + "\\" + "VAT Release_Global_Diagnostics_";
+		xx.Replace(ttt,"");
+		xx.Replace("_Module Diagnostics_", "");
+		buf.Format("%08X", GetFOA(vecResult[i]));
+		xx = buf + "_" + xx;
+		tRoutine = "C:\\Users\\Administrator\\Desktop\\Gm Sepcial\\" +name+"\\"+ xx;
+		hfile = GetFileHandle_W(tRoutine + ".txt");
+		DataConfiguration::WriteOneDataConfig(vecResult[i], hfile);
+		CloseHandle(hfile);
+	}
+
+	if (pmenu->mNextMenus.size())
+	{
+		CString tPath;
+		MenuNode* tmenu;
+		for (int i = 0;i < pmenu->mNextMenus[0].mNextNum;i++)
+		{
+			tPath = path;
+			NextAddr = pmenu->mNextMenus[0].mNextMenuAddrs[i];
+			tmenu = new MenuNode(NextAddr);
+			tPath += tmenu->mName + "_";
+			Trace1(TagDataType, NextAddr, tPath, name);
+			delete tmenu;
+		}
+	}
+	delete pmenu;
+}
+
+
+void VatBin::printOneSpecialFuncByNamePro(int TagDataType, int MenuAddr,CString name, CString path)
 {
 	CString tPath = path + name+"\\";
 	_mkdir(tPath);
-	Trace(TagDataType, MenuAddr, module,tPath,name);
+	//Trace(TagDataType, MenuAddr, module,tPath,name);
+	Trace1(TagDataType, MenuAddr, tPath, name);
 }
 
 inline HANDLE VatBin::GetFileHandle_W(CString path)
@@ -522,6 +577,7 @@ void VatBin::TravMenu(int addr, CString path)
 	CString NextPath;
 	int NextAddr = 0;
 	pmenu->CreateFiles(path);//创建菜单包含的相关文件
+
 	NextPath = path + "\\" + pmenu->mName;
 	if (pmenu->mNextMenus.size())
 	{
@@ -848,6 +904,10 @@ void DataConfiguration::WriteOneDataConfig(int addr, HANDLE FileHandle)
 			{
 				WriteOneDataConfig(GetVA(MNodeAddr), FileHandle);
 			}
+			if (IsNode && MNode.vecNode_4[i].mType_1 == 3&& MNodeAddr!=0x05050404&& MNodeAddr != 0x04040101)
+			{
+				WriteOneDataConfig(GetVA(MNodeAddr), FileHandle);
+			}
 		}
 	}
 	if (NodeType == Type_MDataListNode)
@@ -883,9 +943,18 @@ void DataConfiguration::GetOneFuncDataConfigByName(int addr, int type,CString na
 		{
 			int MNodeAddr = MNode.vecNode_4[i].mVal_2;
 			bool IsNode = (MNodeAddr >= bin.mDataBeginAddr && MNodeAddr <= bin.mDataListEndAddr);
-			if (IsNode&&MNode.vecNode_4[i].mType_1 != 4)
+			//if (IsNode&&MNode.vecNode_4[i].mType_1 != 4)
+			//{
+			//	GetOneFuncDataConfigByName(GetVA(MNodeAddr), type,name, result);
+			//}
+
+			if (IsNode && MNode.vecNode_4[i].mType_1 != 4 && MNode.vecNode_4[i].mType_1 != 3)
 			{
-				GetOneFuncDataConfigByName(GetVA(MNodeAddr), type,name, result);
+				GetOneFuncDataConfigByName(GetVA(MNodeAddr), type, name, result);
+			}
+			if (IsNode && MNode.vecNode_4[i].mType_1 == 3 && MNodeAddr != 0x05050404 && MNodeAddr != 0x04040101)
+			{
+				GetOneFuncDataConfigByName(GetVA(MNodeAddr), type, name, result);
 			}
 		}
 	}
@@ -1353,6 +1422,7 @@ DyArray::DyArray(int addr)
 		else
 		{
 			DataStr tStr(GetVA(mVal_2));
+			mStrX = tStr.mStr;
 			mStr = '"' + tStr.mStr + '"';
 			mIsStr = true;
 		}

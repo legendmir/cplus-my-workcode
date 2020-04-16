@@ -18,10 +18,8 @@
     <ClCompile Include="源.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Uzip.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
+    <ClCompile Include="encript.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

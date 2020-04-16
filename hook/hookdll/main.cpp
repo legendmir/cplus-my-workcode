@@ -6,27 +6,33 @@
 typedef  void(*FUNCTYPE)(int);
 FUNCTYPE pOldFunc;
 
-HANDLE hfile = CreateFile("C:\\Users\\Administrator\\Desktop\\test\\AWFIn_HookOut.txt", GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+//HANDLE hfile = CreateFile("C:\\Users\\Administrator\\Desktop\\test\\AWFIn_HookOut.txt", GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+HANDLE hfile = CreateFile("C:\\Users\\Administrator\\Desktop\\test\\MCC_HookOut.txt", GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 
 
 extern"C" void _declspec(dllexport) pNewFunc()
 {
 	DWORD dw = 0;
-	_LARGE_INTEGER time;
-	CString buf;
-	char*buffer = NULL;
+	char* buf = NULL;
+	char* buffer = NULL;
 	_asm
 	{
 		push esi
-		lea esi,[ebp+0x8]
+		lea esi,[ebp+0xc]
 		mov esi,[esi]
 		mov buffer,esi
-		pop esi
-	}
-	QueryPerformanceCounter(&time);
-	buf.Format("%ld", time.QuadPart);
 
-	WriteFile(hfile, buf, buf.GetLength(), &dw, 0);
+
+		lea esi, [ebp + 0x8]
+		mov esi,[esi]
+		mov esi,[esi]
+		mov esi, [esi]
+		mov buf,esi
+		pop esi
+
+	}
+
+	WriteFile(hfile, buf, strlen(buf), &dw, 0);
 	WriteFile(hfile, "\x0d\x0a", 2, &dw, 0);
 
 	WriteFile(hfile, buffer, strlen(buffer), &dw,0);
@@ -44,8 +50,9 @@ extern"C" void __declspec(naked)Pre()
 		mov esi, [esi]
 
 		push esi
+		push ecx
 		call pNewFunc
-		add esp,4
+		add esp,8
 
 
 		popfd//ª÷∏¥≥ı ºª∑æ≥
