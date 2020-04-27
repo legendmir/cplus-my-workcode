@@ -1,19 +1,8 @@
 #include "du8.h"
 
+
 const char* c_du8::m_trans_path = "F:\\Job Project\\Peugeot\\AWRoot\\dtrd\\trans\\";
 const char* c_du8::m_lang_sig = "en_GB";
-
-//char* c_du8::m_buffer_POLUXDATA;
-//char* c_du8::m_buffer_POLUXVEH;
-//char* c_du8::m_buffer_POLUXXPERT;
-//char* c_du8::m_buffer_POLUXMES;
-//char* c_du8::m_buffer_ENGINE;
-//char* c_du8::m_buffer_POLUXPORT;
-//char* c_du8::m_buffer_POLUXSPV;
-//char* c_du8::m_buffer_AWMMI;
-//char* c_du8::m_buffer_DBMMI;
-//char* c_du8::m_buffer_VEHMNT;
-//char* c_du8::m_buffer_LAUNCHER;
 
 char* c_du8::m_buffer_POLUXDATA = get_du8_buffer("POLUXDATA");
 char* c_du8::m_buffer_POLUXVEH = get_du8_buffer("POLUXVEH");
@@ -26,8 +15,6 @@ char* c_du8::m_buffer_AWMMI = get_du8_buffer("AWMMI");
 char* c_du8::m_buffer_DBMMI = get_du8_buffer("DBMMI");
 char* c_du8::m_buffer_VEHMNT = get_du8_buffer("VEHMNT");
 char* c_du8::m_buffer_LAUNCHER = get_du8_buffer("LAUNCHER");
-
-
 
 c_du8::c_du8()
 {
@@ -145,23 +132,43 @@ string c_du8::convert_du8_string(string str)
 {
 	if (str[0] != '@')
 		return str;
+	if (str.find("@TPL5")!=-1)
+	{
+		return "PL5 + OBD - BR1";
+	}
+	if (str=="@TSIEMENS-VDO")
+	{
+		return "SIEMENS-VDO";
+	}
 	unsigned int i = 0;
 	vector<string>vec_str = split_buffer(str);
 	vector<string>vec_xxx;
 	string result;
 	for (i = 0;i < vec_str.size();i++)
 	{
-		vec_xxx = utils::split(vec_str[i], '-');
-		if (vec_xxx.size() > 1)
+		if (vec_str[i].size()>10)
 		{
-			int id = stoi(vec_xxx[0]);
-			string du8_str = vec_xxx[1];
-			result += get_string_from_du8(du8_str, id);
+			if (vec_str[i][0] != '.' && vec_str[i][0] != '*' && vec_str[i][0] != '-')
+			{
+				vec_xxx = split(vec_str[i], '-');
+				if (vec_xxx.size() > 1&& vec_xxx[1] != " 5")
+				{
+					int id = stoi(vec_xxx[0]);
+					if (id != 146035&&id!=304841)
+					{
+						string du8_str = vec_xxx[1];
+						result += get_string_from_du8(du8_str, id);
+					}
+				}
+			}
 		}
 		//chg  *  /...
 		else
 		{
-			result += vec_xxx[0];
+			if (vec_xxx.size())
+			{
+				result += vec_xxx[0];
+			}
 		}
 	}
 	return result;
@@ -204,6 +211,39 @@ vector<string> c_du8::split_buffer(string str)
 	}
 	if (temp_str.size())
 		vec_str.push_back(temp_str);
+	return vec_str;
+}
+
+vector<string> c_du8::split(string& ori_string, char sig)
+{
+	unsigned int i = 0;
+	vector<string> vec_str;
+	string tstr;
+	unsigned int flag = 0;
+	for (i = 0;i < ori_string.size();i++)
+	{
+
+		if (ori_string[i] == '"' && flag == 0)
+		{
+			flag = 1;
+			i++;
+		}
+		else if (ori_string[i] == '"' && flag == 1)
+		{
+			flag = 0;
+			i++;
+		}
+		if (ori_string[i] == sig && flag == 0)
+		{
+			vec_str.push_back(tstr);
+			tstr.clear();
+		}
+		else
+		{
+			tstr += ori_string[i];
+		}
+	}
+	vec_str.push_back(tstr);
 	return vec_str;
 }
 

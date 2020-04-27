@@ -9,9 +9,8 @@ extern c_sql g_sqls;
 
 struct data_unit
 {
-	string data_type;
 	string data_value;
-	float xx_float_value;
+	string data_type;
 };
 
 class c_fire_bird {

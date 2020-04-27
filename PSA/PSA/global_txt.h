@@ -9,15 +9,14 @@
 using namespace std;
 
 
-class c_state
+class c_tab
 {
 public:
-	c_state();
+	c_tab();
 public:
-	void print(string path = "C:\\Users\\Administrator\\Desktop\\PSA_data\\state.txt");
-	void insert(string key, string value);
-	string convert_to_buffer(int num);
+	static void insert(string key, string value);
 	static map<string, string>m_map;
+	static FILE* fp_tab_conver;
 };
 
 
@@ -26,16 +25,10 @@ class c_format
 public:
 	c_format();
 public:
-	string m_match;
-	string m_replce;
-private:
-	string convert_to_buffer(int num);
-public:
-	void print(string path = "C:\\Users\\Administrator\\Desktop\\PSA_data\\format.txt");
-	void insert(string str);
-	string get_string_from_map(string str);
+	static void insert(string str);
+	static string get_string_from_map(string str);
 	static map<string, string>m_map;
-	static map<int, string>m_exp_map;
+	static FILE* fp_format;
 };
 
 
@@ -43,7 +36,6 @@ class c_conver
 {
 public:
 	c_conver();
-
 private:
 	string convert_head(string& par_id);
 	string convert_factor(string& fctor);
@@ -51,42 +43,31 @@ private:
 	string convert_unit(string& unit);
 
 public:
-
 	string get_buffer();
-
 	string m_factor;
 	string m_offset;
 	string m_unit;
 	string m_parid;
 };
 
-class c_conver_tab
+class c_line_conver
 {
 public:
-	c_conver_tab();
-	
-
+	c_line_conver();
 public:
-	void print(string path="C:\\Users\\Administrator\\Desktop\\PSA_data\\conver_tab.txt");
+	void print();
 private:
 	vector<c_conver> m_vec;
 };
-
 
 class c_txt {
 public:
 	c_txt();
 
 public:
-	void print(string path= "C:\\Users\\Administrator\\Desktop\\PSA_data\\en_txt.txt");
-	void insert_map(string key_str);
-	string get_str_from_map(string str);
-
-
-private:
-	string convert_to_buffer(int num);
+	static void insert_map(string key_str);
+	static string get_str_from_map(string str);
+	static FILE* fp_txt;
 public:
 	static map<string, string>m_map;
-	static map<int, string>m_exp_map;
-
 };

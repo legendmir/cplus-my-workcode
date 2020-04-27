@@ -8,10 +8,6 @@ extern c_txt g_txt;
 
 typedef  unsigned int u_int;
 
-
-string g_source_path = "F:\\Job Project\\Peugeot\\AWRoot\\dtrd\\tree";
-
-
 std::string& replace_all_vec(std::string& str, std::string& old_value, std::vector<std::string>& vec_new_value)
 {
 	int i = 0;
@@ -34,7 +30,6 @@ vector<string> c_node::split(string ori_string, char sig)
 	unsigned int flag = 0;
 	for (i = 0;i < ori_string.size();i++)
 	{
-
 		if (ori_string[i] == '"' && flag == 0)
 		{
 			flag = 1;
@@ -107,6 +102,7 @@ string c_node::get_m_value(string text)
 		return text;
 	}
 }
+
 vector<c_node> c_node::get_vec_son()
 {
 	unsigned int i = 0;
@@ -131,6 +127,7 @@ vector<c_node> c_node::get_vec_son()
 	}
 	return vec_son;
 }
+
 void c_node::insert_map_cel(string tstr)
 {
 	vector<string> t = split(tstr, '=');
@@ -192,8 +189,6 @@ c_cel c_cel::move_next(vector<menu_info>& xx_result)
 			g_tree_info.pop_back();
 			dest_cel = subtree_cel.move_next();
 		}
-
-
 	}
 	else if (m_str_name == "SubTreeEx")
 	{
@@ -216,9 +211,9 @@ c_cel c_cel::move_next(vector<menu_info>& xx_result)
 		c_start_node start_cel(*this);
 		dest_cel = start_cel.move_next();
 	}
-
 	return dest_cel;
 }
+
 
 string c_cel::get_dest()
 {
@@ -403,7 +398,6 @@ bool c_data_comparison_node::process_datacomparison()
 		}
 
 		
-
 		if (!strcmp(source1.m_compare_value.c_str(), "VCHK") || !strcmp(source2.m_compare_value.c_str(), "VCHK"))
 		{
 			return true;
@@ -533,7 +527,15 @@ string c_source_node::get_source()
 	}
 	if (source_name == "GlobalTextBuffer")
 	{
-
+		string gbuffer_name= m_vec_son[0].m_map_attr["name"];
+		if (!c_tree::m_current_veh.map_global_textbuffer.count(gbuffer_name))
+		{
+			c_log::print("file_name : %s :failed to get global buffer\n", c_tree::m_current_veh.m_file_name);
+		}
+		else
+		{
+			m_compare_value = c_tree::m_current_veh.map_global_textbuffer[gbuffer_name];
+		}
 	}
 	if (source_name == "WideTextBuffer")
 	{
@@ -749,7 +751,6 @@ c_sub_tree_cel::c_sub_tree_cel(c_node tnode)
 	m_str_value = tnode.m_str_value;
 	m_vec_son = tnode.get_vec_son();
 
-
 	m_dest_pos = m_map_attr["destc"] + "_" + m_map_attr["destl"];
 	m_file_name = m_map_attr["FileName"];
 	m_file_path = m_vec_son[0].m_map_attr["path"];
@@ -800,6 +801,10 @@ void c_assignment_node::process_assignment()
 	c_source_node tsource(m_vec_son[0]);
 	c_destnation_node tdestination(m_vec_son[1]);
 	g_map_textbuffer[tdestination.m_buffer_name] = tsource.m_compare_value;
+	if (tdestination.m_type_name=="GlobalTextBuffer")
+	{
+		c_tree::m_current_veh.map_global_textbuffer[tdestination.m_buffer_name]= tsource.m_compare_value;
+	}
 }
 
 c_destnation_node::c_destnation_node()
@@ -814,6 +819,7 @@ c_destnation_node::c_destnation_node(c_node& tnode)
 	m_str_value = tnode.m_str_value;
 	m_vec_son = tnode.get_vec_son();
 
+	m_type_name = m_vec_son[0].m_str_name;
 	m_buffer_name = m_vec_son[0].m_map_attr["name"];
 }
 
@@ -923,7 +929,7 @@ c_tree::c_tree()
 c_tree::c_tree(string file_path, string file_name, c_current_veh& current_veh)
 {
 	m_current_veh = current_veh;
-	m_full_path = g_source_path + "\\" + file_path.c_str() + "\\" + file_name.c_str();
+	m_full_path = c_path::source_path + "\\" + file_path.c_str() + "\\" + file_name.c_str();
 	m_file_name = file_name;
 	init_vec_node();
 	g_tree_info.push_back(m_tree_info);
@@ -998,7 +1004,6 @@ c_cel c_tree::get_cel_by_pos(string pos)
 	c_cel dest_cel;
 	int flag = 1;
 
-
 	for (i = 0;i < g_tree_info.back().m_vec_cel.size();i++)
 	{
 		string xx = g_tree_info.back().m_vec_cel[i].m_str_pos;
@@ -1014,10 +1019,13 @@ c_cel c_tree::get_cel_by_pos(string pos)
 		for (i = 0;i < g_tree_info.back().m_vec_part_diag.size();i++)
 		{
 			c_part_diag_cel part_diag_cel(g_tree_info.back().m_vec_part_diag[i]);
-			if (part_diag_cel.m_appl_node.process_appl() == true)
+			if (part_diag_cel.m_cel.m_str_pos== pos)
 			{
-				dest_cel = part_diag_cel.m_cel;
-				break;
+				if (part_diag_cel.m_appl_node.process_appl() == true)
+				{
+					dest_cel = part_diag_cel.m_cel;
+					break;
+				}
 			}
 		}
 	}
@@ -1065,6 +1073,55 @@ void c_tree::quick_scan(vector<menu_info>& xx_result)
 		process_tree(xx_result);
 	}
 }
+
+void c_tree::get_vec_scrname(vector<string>&vec_scr_name,c_cel& x_cel)
+{
+	c_cel pre_cel;
+	c_cel next_cel;
+	vector<menu_info> xx_result;
+	if (x_cel.m_str_name=="")
+	{
+		pre_cel = g_tree_info.back().m_vec_cel[0];
+		next_cel = pre_cel;
+	}
+	else
+	{
+		pre_cel = x_cel;
+		next_cel = pre_cel;
+	}
+	while (next_cel.m_str_name != "End")
+	{
+		if (next_cel.m_str_name == "DiagScreen")
+		{
+			c_diag_screen tt = c_diag_screen(next_cel);
+			vec_scr_name.push_back(tt.m_scr_name);
+			return;
+		}
+		else if(next_cel.m_str_name == "MenuScreen")
+		{
+			c_menu_screen_cel menu_screen_cel= c_menu_screen_cel(next_cel, xx_result);
+			for (size_t i = 0; i < menu_screen_cel.vec_next_cel.size(); i++)
+			{
+				get_vec_scrname(vec_scr_name, menu_screen_cel.vec_next_cel[i]);
+			}
+			return;
+		}
+		else
+		{
+			if (next_cel.m_str_name == "")
+			{
+				return;
+			}
+			next_cel = pre_cel.move_next(xx_result);
+			pre_cel = next_cel;
+		}
+
+	}
+	return;
+	//g_tree_info.pop_back();
+}
+
+
 
 bool c_tree::is_only_one_menu()
 {
@@ -1176,6 +1233,9 @@ c_menu_screen_cel::c_menu_screen_cel(c_cel tnode, vector<menu_info>& xx_result)
 		if (m_vec_son[i].m_str_name == "MenuItem")
 		{
 			item_cnt++;
+			c_menu_item menu_item(m_vec_son[i]);
+			c_cel xx_cel = c_tree::get_cel_by_pos(menu_item.m_target.m_target_pos);
+			vec_next_cel.push_back(xx_cel);
 		}
 	}
 	if (item_cnt != m_vec_son.size())
@@ -1193,16 +1253,17 @@ c_menu_screen_cel::c_menu_screen_cel(c_cel tnode, vector<menu_info>& xx_result)
 			}
 			if (m_vec_son[i].m_str_name == "MenuItem")
 			{
-				c_menu_item_cel menu_item_cel(m_vec_son[i]);
-				if (menu_item_cel.m_item_info.m_file_path != "")
+				c_menu_item menu_item(m_vec_son[i]);
+				if (menu_item.m_item_info.m_file_path != "")
 				{
-					menu_item_cel.m_item_info.m_menu_string = c_du8::convert_du8_string(menu_item_cel.m_item_info.m_menu_string);
-					xx_result.push_back(menu_item_cel.m_item_info);
+					menu_item.m_item_info.m_menu_string = c_du8::convert_du8_string(menu_item.m_item_info.m_menu_string);
+					xx_result.push_back(menu_item.m_item_info);
 				}
 			}
 		}
 	}
 }
+
 
 c_cel c_menu_screen_cel::move_next()
 {
@@ -1238,11 +1299,11 @@ c_label_content::c_label_content(c_node tnode)
 	m_label_name = m_vec_son[0].get_vec_son()[0].m_str_value;
 }
 
-c_menu_item_cel::c_menu_item_cel()
+c_menu_item::c_menu_item()
 {
 }
 
-c_menu_item_cel::c_menu_item_cel(c_cel tnode)
+c_menu_item::c_menu_item(c_cel tnode)
 {
 	vector<c_node>m_vec_son = tnode.get_vec_son();
 	unsigned int i = 0;
@@ -1252,11 +1313,12 @@ c_menu_item_cel::c_menu_item_cel(c_cel tnode)
 		{
 			c_label_content label_content(m_vec_son[i]);
 			m_item_info.m_menu_string = label_content.m_label_name;
+			m_label = label_content.m_label_name;
 		}
 		if (m_vec_son[i].m_str_name == "TargetCell")
 		{
-			c_target_node target_node(m_vec_son[i]);
-			string dest_pos = target_node.m_target_pos;
+			m_target = c_target_node(m_vec_son[i]);
+			string dest_pos = m_target.m_target_pos;
 			c_cel t_cel=c_tree::get_cel_by_pos(dest_pos);
 			if (t_cel.m_str_name == "SubTree")
 			{
@@ -1299,4 +1361,14 @@ bool c_not_node::process_not()
 		printf("没遇到过的NOT节点\n");
 	}
 	return result;
+}
+
+c_diag_screen::c_diag_screen()
+{
+}
+
+c_diag_screen::c_diag_screen(c_node tnode)
+{
+	m_vec_son = tnode.get_vec_son();
+	m_scr_name = m_vec_son[0].m_map_attr["ScreenName"];
 }

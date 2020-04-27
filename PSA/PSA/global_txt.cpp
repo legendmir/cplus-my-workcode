@@ -2,37 +2,34 @@
 #include"utils.h"
 
 map<string, string> c_txt::m_map;
-map<int, string> c_txt::m_exp_map;
+FILE* c_txt::fp_txt = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\en_txt.txt", "w");
 
 map<string, string> c_format::m_map;
-map<int, string> c_format::m_exp_map;
+FILE* c_format::fp_format = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\format.txt", "w");
 
-map<string, string> c_state::m_map;
+
+map<string, string> c_tab::m_map;
+FILE* c_tab::fp_tab_conver = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\tableConv.txt", "w");
+
 
 
 c_txt::c_txt()
 {
 }
 
-
-string c_txt::convert_to_buffer(int num)
-{
-	string result = "0x17,0xFF,";
-	result += utils::convert_4_byte(num);
-	return result;
-}
-
-
 void c_txt::insert_map(string key_str)
 {
-	string xxx_str = c_du8::convert_du8_string(key_str);
-	if (!m_map.count(xxx_str))
+	string repared_str;
+
+	repared_str = c_du8::convert_du8_string(key_str);
+	string buffer;
+	if (!m_map.count(repared_str))
 	{
 		int num = m_map.size() + 1;
-		string num_str = convert_to_buffer(num);
-		m_map[xxx_str] = num_str;
-		string total_str = num_str + "\"" + xxx_str + "\"" + "\n";
-		m_exp_map[num] = total_str;
+		string num_str = "0x17,0xFF," + utils::convert_4_byte(num);
+		m_map[repared_str] = num_str;
+		buffer = num_str + "\t" + repared_str + "\n";
+		fwrite(buffer.c_str(), 1, buffer.size(), fp_txt);
 	}
 }
 
@@ -42,66 +39,35 @@ string c_txt::get_str_from_map(string str)
 	return m_map[xx];
 }
 
-void c_txt::print(string path)
-{
-	FILE* fp = fopen(path.c_str(), "w");
-	unsigned int i = 0;
-	string tbuffer;
-	for (i = 1;i < m_exp_map.size() + 1;i++)
-	{
-		tbuffer = m_exp_map[i];
-		fwrite(tbuffer.c_str(), 1, tbuffer.size(), fp);
-	}
-	fclose(fp);
-}
-
 
 c_format::c_format()
 {
 }
 
-string c_format::convert_to_buffer(int num)
-{
-	string head = "0x17,0xFE,";
-	return head+utils::convert_4_byte(num);
-}
-
-void c_format::print(string path)
-{
-	FILE* fp = fopen(path.c_str(), "w");
-	unsigned int i = 0;
-	string tbuffer;
-	for (i = 1;i < m_exp_map.size() + 1;i++)
-	{
-		tbuffer = m_exp_map[i];
-		fwrite(tbuffer.c_str(), 1, tbuffer.size(), fp);
-	}
-}
 
 
 void c_format::insert(string str)
 {
+	string write_buffer;
 	if (!m_map.count(str))
 	{
 		int num = m_map.size() + 1;
-		string num_str = convert_to_buffer(num);
+		string num_str = string("0xFD,0x00,0x00,") + utils::convert_4_byte(num);
 		m_map[str] = num_str;
-		string total_str = num_str + "\"" + str + "\"" + "\n";
-		m_exp_map[num] = total_str;
+		write_buffer = num_str + "\t" + str+"\n";
+		fwrite(write_buffer.c_str(), 1, write_buffer.size(), fp_format);
 	}
 }
 
 string c_format::get_string_from_map(string str)
 {
-	string xx = c_du8::convert_du8_string(str);
-	return m_map[xx];
+	return m_map[str];
 }
 
-c_conver_tab::c_conver_tab()
+c_line_conver::c_line_conver()
 {
 	vector<string> vec_str;
 	vector<map<string, data_unit>> result = fire_bird::get_sql_result(st_gloabl_conver, vec_str);
-
 	c_conver tt;
 	for (u_int i = 0;i < result.size();i++)
 	{
@@ -138,9 +104,10 @@ string c_conver::convert_unit(string& unit)
 	return "\""+ unit +"\"";
 }
 
-void c_conver_tab::print(string path)
+void c_line_conver::print()
 {
-	FILE* fp = fopen(path.c_str(), "w");
+	string new_path = c_path::output_path + "linerConv.txt";
+	FILE* fp = fopen(new_path.c_str(), "w");
 	string tbuffer;
 	for (u_int i = 0;i < m_vec.size();i++)
 	{
@@ -160,34 +127,20 @@ string c_conver::get_buffer()
 	return buf;
 }
 
-c_state::c_state()
+c_tab_conver::c_tab_conver()
 {
 
 }
 
 
-void c_state::print(string path)
+void c_tab::insert(string key,string value)
 {
-	FILE* fp = fopen(path.c_str(), "w");
-	string tbuffer;
-	for (map<string, string>::iterator it = m_map.begin(); it != m_map.end(); ++it)
-	{
-		tbuffer = it->first + "\t" + it->second;
-		fwrite(tbuffer.c_str(), 1, tbuffer.size(), fp);
-	}
-	fclose(fp);
-}
-
-void c_state::insert(string key,string value)
-{
+	string write_buffer;
 	if (!m_map.count(key))
 	{
 		m_map[key] = value;
+		write_buffer = key + "\t" + value + "\n";
+		fwrite(write_buffer.c_str(), 1, write_buffer.size(), fp_tab_conver);
 	}
-}
-
-string c_state::convert_to_buffer(int num)
-{
-	return utils::convert_4_byte(num);
 }
 

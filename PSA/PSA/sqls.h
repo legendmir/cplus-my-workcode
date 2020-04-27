@@ -28,6 +28,17 @@ enum sql_type {
 	st_data_stream_line_disc,
 	st_data_stream_algorithm,
 	st_gloabl_conver,
+	st_dtc_serid,
+	st_dtc_serunid,
+	st_dtc_serunfrid,
+	st_dtc_req_cmd,
+	st_dtc_clr_serid,
+	st_dtc_clr_serunfrid,
+	st_dtc_clr_cmd,
+	st_dtc_rec_info,
+	st_dtc_scrname,
+	st_dtc_scrid,
+	st_dtc_lib,
 };
 
 class c_sql {

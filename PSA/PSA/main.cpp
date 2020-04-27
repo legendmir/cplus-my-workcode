@@ -4,11 +4,10 @@
 #include"tinyxml2.h"
 #include"basic_data.h"
 #include"global_txt.h"
+#include"log.h"
 
 extern map<string, string> g_map_textbuffer;
-extern c_txt g_txt;
-extern c_format g_format;
-extern c_state g_state;
+
 int main()
 {
 
@@ -24,9 +23,11 @@ int main()
 	//t_config.m_moudle_name = "T73_Chine";
 	//t_config.m_ecu_type = "BOITIER_TELEMATIQUE";
 	//t_config.m_ecu_descript = "BOITIER_TELEMATIQUE|VSOFT60";
-	//c_tree xxx("vehicle\\T7\\TELEMAT\\BOITIER_TELEMATIQUE", "MENU__T7__TELEMAT__BOITIER_TELEMATIQUE.s", t_config);
-	//vector<menu_info> xx_result;
-	//xxx.quick_scan(xx_result);
+	//c_tree xxx("vehicle\\T7\\ABRASR\\ABS81", "T7_ABS81_mesures_parametres_standard.s", t_config);
+	//
+	//vector<string> vec_src;
+	//c_cel t_cel;
+	//xxx.get_vec_scrname(vec_src, t_cel);
 
 
 	//sql_info st_ecu_variant_one_line = g_sqls.sql_map[st_ecu_variant_list_one_line_info];
@@ -37,20 +38,15 @@ int main()
 	//vector<map<string, data_unit>> one_line_result = veh_result1->get_result_tab();
 
 
-	c_conver_tab ccc;
-	ccc.print();
+	//c_conver_tab ccc;
+	//ccc.print();
 
-	c_data_stream_group xx;
-	xx.load_data("1041", "MESUREPARAMETRE11");
-	xx.print("C:\\Users\\Administrator\\Desktop\\PSA_data\\information.txt");
+	//c_data_stream_group xx;
+	//xx.load_data("1041", "MESUREPARAMETRE11");
+	//xx.print("C:\\Users\\Administrator\\Desktop\\PSA_data\\information.txt");
 
-	g_txt.print();
-	g_format.print();
-	g_state.print();
-
-	//c_all_veh xx;
-	//xx.print_veh_menu();
-	//xx.print_ecus_data();
-
+	c_veh xx= c_veh("T73_Chine", "116");
+	xx.print_ecus_txt();
+	xx.print_quality_txt();
 	return 0;
 }

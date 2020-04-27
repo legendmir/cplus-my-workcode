@@ -1,9 +1,7 @@
 #pragma once
 #include<string>
 #include<vector>
-#include"utils.h"
 using namespace std;
-
 class c_du8
 {
 public:
@@ -16,6 +14,12 @@ public:
 	static string convert_du8_string(string str);
 	static char* get_du8_buffer(string du8name);
 	static vector<string>split_buffer(string str);
+	static vector<string> split(string& ori_string, char sig);
+
+
+
+
+
 
 public:
 	static const char* m_lang_sig;

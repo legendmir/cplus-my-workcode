@@ -7,15 +7,9 @@
 #include"tinyxml2.h"
 #include"sqls.h"
 #include"fire_bird.h"
+#include"path.h"
 using namespace std;
 
-
-class menu_info {
-public:
-	string m_file_path;
-	string m_file_name;
-	string m_menu_string;
-};
 
 class c_xml {
 public:
@@ -54,9 +48,8 @@ class c_cel :public c_node {
 public:
 	c_cel();
 	c_cel(c_node& tnode);
-	virtual c_cel move_next(vector<menu_info>& xx_result);
-
-	virtual string get_dest();
+	c_cel move_next(vector<menu_info>& xx_result);
+	string get_dest();
 public:
 	cel_type m_cel_type;
 	string m_str_pos;
@@ -146,6 +139,7 @@ public:
 	c_destnation_node(c_node& tnode);
 
 public:
+	string m_type_name;
 	string m_buffer_name;
 };
 
@@ -263,15 +257,12 @@ public:
 	menu_info m_menu_info;
 };
 
-enum menu_type{
-	mt_movable, 
-	mt_no_movable
-};
 class c_menu_screen_cel :public c_cel{
 public:
 	c_menu_screen_cel();
 	c_menu_screen_cel(c_cel tnode, vector<menu_info>& xx_result);
-	virtual c_cel move_next();
+	c_cel move_next();
+	vector<c_cel> vec_next_cel;
 public:
 	int m_mov_flag;
 };
@@ -283,15 +274,23 @@ public:
 	string m_label_name;
 };
 
-class c_menu_item_cel {
+class c_menu_item :c_node{
 public:
-	c_menu_item_cel();
-	c_menu_item_cel(c_cel tnode);
+	c_menu_item();
+	c_menu_item(c_cel tnode);
 public:
-
+	string m_label;
+	c_target_node m_target;
 	menu_info m_item_info;
 };
 
+class c_diag_screen :public c_cel{
+public:
+	c_diag_screen();
+	c_diag_screen(c_node tnode);
+
+	string m_scr_name;
+};
 
 class c_tree {
 public:
@@ -304,6 +303,8 @@ public:
 public:
 	void process_tree(vector<menu_info>& xx_result);
 	void quick_scan(vector<menu_info>& xx_result);
+	void get_vec_scrname(vector<string>&,c_cel& vec_cel);
+public:
 	bool is_only_one_menu();
 	bool is_script_file();
 public:

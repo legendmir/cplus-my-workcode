@@ -42,7 +42,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -97,7 +97,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
     <Link>
@@ -143,7 +143,9 @@
     <ClCompile Include="du8.cpp" />
     <ClCompile Include="fire_bird.cpp" />
     <ClCompile Include="global_txt.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="path.cpp" />
     <ClCompile Include="sfile.cpp" />
     <ClCompile Include="sqls.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
@@ -154,6 +156,8 @@
     <ClInclude Include="basic_data.h" />
     <ClInclude Include="du8.h" />
     <ClInclude Include="global_txt.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="path.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="utils.h" />
     <ClInclude Include="veh_basic.h" />

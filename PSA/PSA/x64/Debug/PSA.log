@@ -1,0 +1,9 @@
+﻿  basic_data.cpp
+G:\code\C++\cplus-my-workcode\PSA\PSA\basic_data.cpp(163,40): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+G:\code\C++\cplus-my-workcode\PSA\PSA\basic_data.cpp(166,43): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+G:\code\C++\cplus-my-workcode\PSA\PSA\basic_data.cpp(170,42): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+G:\code\C++\cplus-my-workcode\PSA\PSA\basic_data.cpp(315,33): warning C4267: “初始化”: 从“size_t”转换到“int”，可能丢失数据
+G:\code\C++\cplus-my-workcode\PSA\PSA\basic_data.cpp(329,85): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+G:\code\C++\cplus-my-workcode\PSA\PSA\basic_data.cpp(351,86): warning C4267: “参数”: 从“size_t”转换到“int”，可能丢失数据
+G:\code\C++\cplus-my-workcode\PSA\PSA\basic_data.cpp(620,28): warning C4267: “初始化”: 从“size_t”转换到“u_int”，可能丢失数据
+  PSA.vcxproj -> G:\code\C++\cplus-my-workcode\PSA\x64\Debug\PSA.exe

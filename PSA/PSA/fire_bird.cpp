@@ -1,7 +1,6 @@
 #include "fire_bird.h"
+#include"path.h"
 
-
-string g_db_path = "G:\\code\\C++\\cplus-my-workcode\\PSA\\PSA\\db_path\\";
 
 char* new_buffer(int size)
 {
@@ -12,7 +11,7 @@ char* new_buffer(int size)
 
 c_fire_bird::c_fire_bird(string db_name, string sql)
 {
-	string file_path = g_db_path + db_name+".FDB";
+	string file_path = c_path::db_path + db_name+".FDB";
 	const char* db_path = file_path.c_str();
 	m_db = IBPP::DatabaseFactory("", db_path, "SYSDBA", "masterkey");
 	m_db->Connect();
@@ -31,7 +30,6 @@ vector<map<string, data_unit>> c_fire_bird::get_result_tab()
 	vector<map<string, data_unit>>vec_map;
 	string data_name;
 	data_unit t_unit;
-	t_unit.xx_float_value = 0;
 	char* p_blob = 0;
 	for (i = 0;m_st->Fetch() != 0;i++)
 	{
@@ -101,7 +99,6 @@ vector<map<string, data_unit>> c_fire_bird::get_result_tab()
 				t_unit.data_type = "sdFloat";
 				float t_float = 0;
 				m_st->Get(j + 1, &t_float);
-				t_unit.xx_float_value = t_float;
 				t_unit.data_value = to_string(t_float);
 			}
 			if (data_type == IBPP::sdDouble)

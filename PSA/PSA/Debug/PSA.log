@@ -1,0 +1,27 @@
+﻿  basic_data.cpp
+  du8.cpp
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(33,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(42,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(51,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(60,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(69,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(78,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(87,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(96,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(105,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(114,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(123,25): warning C4018: “<”: 有符号/无符号不匹配
+  fire_bird.cpp
+  global_txt.cpp
+G:\code\C++\cplus-my-workcode\PSA\PSA\global_txt.cpp(92,9): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+G:\code\C++\cplus-my-workcode\PSA\PSA\global_txt.cpp(98,9): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+  main.cpp
+  sfile.cpp
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(15,15): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(468,17): warning C4018: “>”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(483,17): warning C4018: “>”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(958,52): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(1061,20): warning C4018: “<”: 有符号/无符号不匹配
+  sqls.cpp
+  正在生成代码...
+  PSA.vcxproj -> G:\code\C++\cplus-my-workcode\PSA\Debug\PSA.exe
