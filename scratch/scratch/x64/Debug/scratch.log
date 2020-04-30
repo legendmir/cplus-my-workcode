@@ -1,0 +1,9 @@
+﻿  源.cpp
+G:\code\C++\cplus-my-workcode\scratch\scratch\源.cpp(68,30): warning C4244: “=”: 从“__int64”转换到“DWORD”，可能丢失数据
+G:\code\C++\cplus-my-workcode\scratch\scratch\源.cpp(82,45): warning C4244: “=”: 从“__int64”转换到“char”，可能丢失数据
+G:\code\C++\cplus-my-workcode\scratch\scratch\源.cpp(116,41): warning C4244: “=”: 从“__int64”转换到“char”，可能丢失数据
+G:\code\C++\cplus-my-workcode\scratch\scratch\源.cpp(142,37): warning C4311: “类型强制转换”: 从“char *”到“DWORD”的指针截断
+G:\code\C++\cplus-my-workcode\scratch\scratch\源.cpp(142,37): warning C4302: “类型强制转换”: 从“char *”到“DWORD”截断
+G:\code\C++\cplus-my-workcode\scratch\scratch\源.cpp(142,48): warning C4311: “类型强制转换”: 从“char *”到“DWORD”的指针截断
+G:\code\C++\cplus-my-workcode\scratch\scratch\源.cpp(142,48): warning C4302: “类型强制转换”: 从“char *”到“DWORD”截断
+  scratch.vcxproj -> G:\code\C++\cplus-my-workcode\scratch\x64\Debug\scratch.exe

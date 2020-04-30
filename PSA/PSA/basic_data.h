@@ -117,11 +117,12 @@ class c_data_stream_group
 {
 public:
 	c_data_stream_group();
-	c_data_stream_group(int group_num,string ecu_id,string ecu_veid, string scrname);
+	c_data_stream_group(int group_num,string ecu_id,string ecu_veid, string scrname,string file_name);
 
 public:
 	vector<c_data_stream>m_vec_data_stream;
 	string m_buffer;
+	string m_file_name;
 private:
 	string m_scrid;
 	string m_name;
@@ -137,12 +138,13 @@ public:
 
 private:
 	vector<menu_info> get_func_file(c_current_veh& cur_ceh);
-	void run_variant_file(c_current_veh& cur_veh);
+	void get_global_buffer(c_current_veh& cur_veh);
 
 public:
 	int is_null;
 	string m_buffer;
 	static c_dtc m_dtc;
+
 private:
 	string m_name;
 	string m_id; 
@@ -157,6 +159,13 @@ private:
 	string m_pos;
 	string m_length;
 	vector<string> m_vec_func_file;
+
+
+	c_data_stream_group m_ident_group;
+	c_data_stream_group m_standard_group;
+	
+	string m_ident_name;
+	string m_standard_name;
 
 };
 

@@ -1,6 +1,7 @@
 #pragma once
 #include<stdio.h>
 #include<string>
+#include<map>
 #include<windows.h>
 class c_log {
 public:

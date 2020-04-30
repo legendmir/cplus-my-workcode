@@ -48,5 +48,26 @@ int main()
 	c_veh xx= c_veh("T73_Chine", "116");
 	xx.print_ecus_txt();
 	xx.print_quality_txt();
+
+	//c_veh xx = c_veh("P87", "139");
+	//xx.print_ecus_txt();
+	//xx.print_quality_txt();
+
+
+	//c_veh xx = c_veh("P84Chine", "137");//4008
+	//xx.print_ecus_txt();
+	//xx.print_quality_txt();
+
+
+	//c_veh xx = c_veh("3008C_", "133");
+	//xx.print_ecus_txt();
+	//xx.print_quality_txt();
+
+
+	//c_veh xx = c_veh("A94", "130");
+	//xx.print_ecus_txt();
+	//xx.print_quality_txt();
+
+
 	return 0;
 }

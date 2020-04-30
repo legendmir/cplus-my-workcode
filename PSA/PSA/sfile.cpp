@@ -530,7 +530,7 @@ string c_source_node::get_source()
 		string gbuffer_name= m_vec_son[0].m_map_attr["name"];
 		if (!c_tree::m_current_veh.map_global_textbuffer.count(gbuffer_name))
 		{
-			c_log::print("file_name : %s :failed to get global buffer\n", c_tree::m_current_veh.m_file_name);
+			c_log::print("get global buffer failed, file : %s, ecu :%s buffer_name ,:%s\n", c_tree::m_current_veh.m_file_name.c_str(), c_tree::m_current_veh.m_ecu_type.c_str(), gbuffer_name.c_str());
 		}
 		else
 		{
@@ -994,7 +994,6 @@ void c_tree::init_vec_cel()
 		{
 			m_tree_info.m_vec_cel.push_back(tcel);
 		}
-
 	}
 }
 
@@ -1034,7 +1033,6 @@ c_cel c_tree::get_cel_by_pos(string pos)
 
 void c_tree::process_tree(vector<menu_info>& xx_result)
 {
-	
 	c_cel pre_cel = g_tree_info.back().m_vec_cel[0];
 	c_cel next_cel = pre_cel;
 	while (next_cel.m_str_name != "End")
@@ -1047,9 +1045,13 @@ void c_tree::process_tree(vector<menu_info>& xx_result)
 		else
 		{
 			next_cel = pre_cel.move_next(xx_result);
+			if (next_cel.m_str_pos=="")
+			{
+				c_log::print("run tree failed , file_path : %s , file_name : %s\n", m_current_veh.m_file_path.c_str(), m_current_veh.m_file_name.c_str());
+				break;
+			}
 			pre_cel = next_cel;
 		}
-
 	}
 	g_tree_info.pop_back();
 }
@@ -1066,7 +1068,6 @@ void c_tree::quick_scan(vector<menu_info>& xx_result)
 				return;
 			}
 		}
-
 	}
 	else
 	{
@@ -1158,7 +1159,6 @@ c_xml::c_xml(string ecu_name, string veh_name)
 {
 	m_xml_file_path = "F:\\Job Project\\Peugeot\\AWRoot\\dtrd\\database\\xml\\contextualisation.xml";
 	get_variant_file_name(ecu_name, veh_name);
-	
 }
 
 string c_xml::get_variant_file_name(string ecu_name, string veh_name)
@@ -1177,6 +1177,10 @@ string c_xml::get_variant_file_name(string ecu_name, string veh_name)
 		ecu_element = ecu_element->NextSiblingElement();
 	}
 
+	if (ecu_element == 0)
+	{
+		return string();
+	}
 	tinyxml2::XMLElement* veh_element = ecu_element->FirstChildElement();
 	while (veh_element)
 	{
@@ -1187,9 +1191,12 @@ string c_xml::get_variant_file_name(string ecu_name, string veh_name)
 		}
 		veh_element = veh_element->NextSiblingElement();
 	}
+	if (veh_element==0)
+	{
+		return string();
+	}
 	m_path = veh_element->FirstChildElement()->GetText();
 	m_file_name = veh_element->FirstChildElement()->NextSiblingElement()->GetText();
-
 	return string();
 }
 
@@ -1201,10 +1208,13 @@ c_sub_tree_ex_cel::c_sub_tree_ex_cel(c_node tnode)
 	m_str_value = tnode.m_str_value;
 	m_vec_son = tnode.get_vec_son();
 
-
 	m_dest_pos = m_map_attr["destc"] + "_" + m_map_attr["destl"];
 
 	c_xml xx(c_tree::m_current_veh.m_ecu_type, c_tree::m_current_veh.m_comtype);
+	if (xx.m_file_name=="")
+	{
+		return;
+	}
 	c_tree t_tree(xx.m_path, xx.m_file_name, c_tree::m_current_veh);
 	m_tree = t_tree;
 }
@@ -1358,7 +1368,7 @@ bool c_not_node::process_not()
 	}
 	else
 	{
-		printf("没遇到过的NOT节点\n");
+		c_log::print("not met node,ecu:%s ,file: %s, descript: %s\n", c_tree::m_current_veh.m_ecu_type.c_str(), c_tree::m_current_veh.m_file_name.c_str(), c_tree::m_current_veh.m_ecu_descript.c_str());
 	}
 	return result;
 }

@@ -15,7 +15,8 @@ enum sql_type {
 	st_ecu_info,
 	st_ecu_descript_info,
 	st_veh_comtype,
-	st_veh_id, st_ecu_protcol,
+	st_veh_id, 
+	st_ecu_protcol,
 	st_ecu_variant_list,
 	st_ecu_variant_list_all,
 	st_ecu_identification,//∞Ê±æ–≈œ¢
@@ -39,6 +40,7 @@ enum sql_type {
 	st_dtc_scrname,
 	st_dtc_scrid,
 	st_dtc_lib,
+	st_dtc_newlib,
 };
 
 class c_sql {

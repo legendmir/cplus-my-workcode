@@ -37,12 +37,12 @@ c_veh::c_veh(string mod_name,string mod_id, string reserch_type)
 	}
 	if (!vec_com_type.size())
 	{
-		c_log::print("mod_name: %s mod_id: %s 没有通讯类型\n", mod_name.c_str(), mod_id.c_str());
+		c_log::print("c_veh::mod_name: %s mod_id: %s 没有通讯类型\n", mod_name.c_str(), mod_id.c_str());
 		return;
 	}
 	else if(vec_com_type.size()>1)
 	{
-		c_log::print("mod_name: %s mod_id: %s 有多余1种comtype: %s ,%s ...\n", mod_name.c_str(), mod_id.c_str(), vec_com_type[0].c_str(),vec_com_type[1].c_str());
+		c_log::print("c_veh::mod_name: %s mod_id: %s 有多余1种comtype: %s ,%s ...\n", mod_name.c_str(), mod_id.c_str(), vec_com_type[0].c_str(),vec_com_type[1].c_str());
 	}
 	else
 	{
@@ -56,7 +56,7 @@ c_veh::c_veh(string mod_name,string mod_id, string reserch_type)
 	result = fire_bird::get_sql_result(st_veh_id, vec_parm);
 	if (!result.size())
 	{
-		c_log::print("mod_name: % s mod_id : % s查询veh_id为空\n", mod_name.c_str(), mod_id.c_str());
+		c_log::print("c_veh::search VEHID failed ,mod_name: % s mod_id : % s\n", mod_name.c_str(), mod_id.c_str());
 		return;
 	}
 	else
@@ -73,7 +73,9 @@ c_veh::c_veh(string mod_name,string mod_id, string reserch_type)
 	for (size_t i = 0; i < result.size(); i++)
 	{
 		if (result[i]["FAMILYNAME"].data_value == "BMF" ||
-			result[i]["FAMILYNAME"].data_value == "MDS")
+			result[i]["FAMILYNAME"].data_value == "MDS"
+			//||result[i]["FAMILYNAME"].data_value == "INJ"
+			)
 		{
 			continue;
 		}
@@ -132,13 +134,12 @@ void c_veh::print_ecus_txt()
 	string xpath = c_path::output_path+ file_name;
 	FILE* fp = fopen(xpath.c_str(), "w");
 	string head = "0x17," + utils::convert_2_byte(stoi(m_mod_id));
-	u_int i = 0;
 	string tbuffer;
 	vector<string>vec_temp;
 
-	for (i = 0;i < m_vec_ecu.size();i++)
+	for (size_t i = 0;i < m_vec_ecu.size();i++)
 	{
-		tbuffer = head +","+ utils::convert_4_byte(i + 1) +"\t"+ m_vec_ecu[i].m_buffer;
+		tbuffer = head + "," + utils::convert_4_byte(i + 1) + "\t" + m_vec_ecu[i].m_buffer + "\t" + utils::convert_2_byte(stoi(m_mod_id)) + "," + utils::convert_1_byte(int(i + 1));
 		tbuffer += "\n";
 		fwrite(tbuffer.c_str(), 1, tbuffer.size(), fp);
 	}
@@ -195,7 +196,7 @@ c_ecu::c_ecu(string name, string label, string ve_id,c_current_veh& cur_veh)
 	vector<map<string, data_unit>> result = fire_bird::get_sql_result(st_ecu_protcol, vec_parm);
 	if (!result.size())
 	{
-		c_log::print("fam_name:%s  查询 fam_id 为空\n", m_fam_name.c_str(), m_fam_label.c_str());
+		c_log::print("c_ecu::search FAMID failed ,fam_name:%s  \n", m_fam_name.c_str(), m_fam_label.c_str());
 	}
 	m_fam_id = result[0]["FAMID"].data_value;
 	m_famid_request = result[0]["FAMIDCANR"].data_value;
@@ -209,7 +210,7 @@ c_ecu::c_ecu(string name, string label, string ve_id,c_current_veh& cur_veh)
 	result = fire_bird::get_sql_result(st_ecu_variant_list, vec_parm);
 	if (!result.size())
 	{
-		c_log::print("fam_id %s 查询失败\n");
+		c_log::print("c_ecu::search var_list failed ,fam_id %s \n", m_fam_id.c_str());
 		return;
 	}
 	vector<string> vec_str;
@@ -287,12 +288,12 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 	result= fire_bird::get_sql_result(st_ecu_descript_info, vec_parm);
 	if (!result.size())
 	{
-		c_log::print("%s  %s 查询ecu variant信息 为空\n", ecu_id.c_str(), str_var.c_str());
+		c_log::print("c_ecu_variant::search RECDESCRIPT info failed, %s  %s \n", ecu_id.c_str(), str_var.c_str());
 		return;
 	}
 	if (result.size() > 1)
 	{
-		c_log::print("%s  %s 查询ecu variant信息 有多个\n", ecu_id.c_str(), str_var.c_str());
+		c_log::print("c_ecu_variant::search RECDESCRIPT not only one, %s  %s \n", ecu_id.c_str(), str_var.c_str());
 	}
 	m_variant_descript = utils::get_descript(result[0]["RECDESCRIPT"].data_value);
 	cur_veh.m_ecu_descript = m_variant_descript;
@@ -300,7 +301,7 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 
 	m_buffer = "\"" + cur_veh.m_moudle_name+","+ m_name + ","+m_ecu_id+","+ m_variant_name +"," + m_variant_descript +","+ m_re_coframe + "," + m_cmd1 + "," + m_cmd2 + "," + m_IDEMNEMOVALUE + "," + m_pos + "," + m_length + ",";
 	vector<menu_info>menu_func_result = get_func_file(cur_veh);
-	run_variant_file(cur_veh);
+	get_global_buffer(cur_veh);//获取全局的global buffer 到veh.map
 	string new_file_name;
 	for (size_t i = 0; i < menu_func_result.size(); i++)
 	{
@@ -310,8 +311,8 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 		file_type ft = utils::get_func_file_type(new_file_name);
 		if (ft == ft_ident)
 		{
-			m_buffer += m_ecu_id + "_" + new_file_name + ",";
-			if (!m_func_map.count(m_ecu_id + "_" + new_file_name))
+			new_file_name = m_ecu_id + "_" + new_file_name ;
+			if (!m_func_map.count(new_file_name))
 			{
 				vector<string> vec_scrname;
 				c_tree t_tree(menu_func_result[i].m_file_path, menu_func_result[i].m_file_name, cur_veh);
@@ -320,19 +321,19 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 				string all_buffer;
 				for (size_t i = 0; i < vec_scrname.size(); i++)
 				{
-					c_data_stream_group tt= c_data_stream_group(i+1,m_ecu_id,m_veid, vec_scrname[i]);
-					all_buffer += tt.m_buffer;
+					m_ident_group = c_data_stream_group(i+1,m_ecu_id,m_veid, vec_scrname[i], new_file_name);
+					all_buffer += m_ident_group.m_buffer;
 				}
-				m_func_map[m_ecu_id + "_" + new_file_name] = all_buffer;
+				m_func_map[new_file_name] = all_buffer;
 			}
+			m_ident_name = new_file_name;
 		}
 		if (ft == ft_standard)
 		{
-			m_buffer += new_file_name + ",";
 			if (!m_func_map.count(new_file_name))
 			{
 				vector<string> vec_scrname;
-				if (menu_func_result[i].m_file_name=="T7_BOITIER_TELEMATIQUE_mesures_parametres_standard_1389.s")
+				if (menu_func_result[i].m_file_name=="T7_HDI_SID807_BR2_mesures_parametres_standard_312.s")
 				{
 					int cc = 0;
 				}
@@ -342,25 +343,35 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 				string all_buffer;
 				for (size_t i = 0; i < vec_scrname.size(); i++)
 				{
-					c_data_stream_group tt= c_data_stream_group(i+1, m_ecu_id,m_veid, vec_scrname[i]);
-					all_buffer += tt.m_buffer;
+					m_standard_group = c_data_stream_group(i+1, m_ecu_id,m_veid, vec_scrname[i], new_file_name);
+					all_buffer += m_standard_group.m_buffer;
 				}
 				m_func_map[new_file_name] = all_buffer;
 			}
+			m_standard_name = new_file_name;
 		}
 		if (ft == ft_defauts)
 		{
 			new_file_name = ecu_id + "_dtc";
-			m_buffer += new_file_name + ",";
 			if (!m_func_map.count(new_file_name))
 			{
 				m_dtc = c_dtc(ecu_id,m_veid);
 				m_func_map[new_file_name]=m_dtc.m_all_buffer;
-				//m_buffer += m_dtc.m_quality_buffer;
 			}
 		}
 	}
-	m_buffer = m_buffer +m_dtc.m_quality_buffer+"\"";
+	
+	m_buffer += m_ident_name + "," + m_standard_name + "," + m_dtc.m_file_name + ",";
+	
+	
+	if (m_dtc.m_quality_buffer=="")
+	{
+		m_buffer = m_buffer + ",,\"";
+	}
+	else
+	{
+		m_buffer = m_buffer + m_dtc.m_quality_buffer + "\"";
+	}
 }
 
 
@@ -385,12 +396,12 @@ vector<menu_info> c_ecu_variant::get_func_file( c_current_veh& cur_veh)
 	t_tree.quick_scan(menu_func_result);
 	if (!menu_func_result.size())
 	{
-		c_log::print("获取ecu功能menu失败 %s  %s\n", m_variant_name, m_ecu_id);
+		c_log::print("c_ecu_variant::获取ecu功能menu失败 %s  %s\n", m_variant_name, m_ecu_id);
 	}
 	return menu_func_result;
 }
 
-void c_ecu_variant::run_variant_file(c_current_veh& cur_veh)
+void c_ecu_variant::get_global_buffer(c_current_veh& cur_veh)
 {
 	c_tree t_tree;
 	c_tree t_var_tree;
@@ -410,16 +421,44 @@ void c_ecu_variant::run_variant_file(c_current_veh& cur_veh)
 		variant_file_name = utils::get_variant_file_name(new_file_path);
 	}
 
+
+	if (new_file_name!=""&& new_file_name!="MENU__T7__ABRASR__ABS81.s"
+		&& new_file_name != "MENU__T84__AUTORADIO__AUTORADIO.s")
+	{
+		map<string, string> tmp_map;
+		t_tree = c_tree(new_file_path, new_file_name, cur_veh);
+		vector<menu_info> xxx;
+		t_tree.process_tree(xxx);
+		tmp_map= t_tree.m_current_veh.map_global_textbuffer;
+		for (auto it : tmp_map)
+		{
+			cur_veh.map_global_textbuffer[it.first] = it.second;
+		}
+		if (tmp_map.size())
+		{
+			//c_log::print("have global_buffer:ecu_id:%s ,file_name: %s\n", m_ecu_id.c_str(), new_file_name.c_str());
+		}
+	}
+
 	if (variant_file_name != "")
 	{
+		map<string, string> tmp_map1;
 		t_var_tree = c_tree(new_file_path, variant_file_name, cur_veh);
 		vector<menu_info> xxx;
 		t_var_tree.process_tree(xxx);
-		cur_veh.map_global_textbuffer = t_var_tree.m_current_veh.map_global_textbuffer;
+		tmp_map1= t_var_tree.m_current_veh.map_global_textbuffer;
+		for (auto it : tmp_map1)
+		{
+			cur_veh.map_global_textbuffer[it.first] = it.second;
+		}
 		if (cur_veh.map_global_textbuffer.size())
 		{
-			c_log::print("file_name:%s have global_textbuffer\n", cur_veh.m_file_name.c_str());
+			//c_log::print("have global_buffer:ecu_id:%s ,file_name: %s\n", m_ecu_id.c_str(), variant_file_name.c_str());
 		}
+	}
+	if (cur_veh.map_global_textbuffer.size()==2)
+	{
+		//c_log::print("have 2 global_buffer:ecu_id:%s ,file_name: %s\n", m_ecu_id.c_str(), variant_file_name.c_str());
 	}
 }
 
@@ -429,8 +468,9 @@ c_data_stream_group::c_data_stream_group()
 
 }
 
-c_data_stream_group::c_data_stream_group(int group_num, string ecu_id,string ecu_veid, string scrname)
+c_data_stream_group::c_data_stream_group(int group_num, string ecu_id,string ecu_veid, string scrname, string file_name)
 {
+	m_file_name = file_name;
 	vector<string> vec_parm;
 	vector<map<string, data_unit>> result;
 	vec_parm.push_back(ecu_id);
@@ -438,7 +478,7 @@ c_data_stream_group::c_data_stream_group(int group_num, string ecu_id,string ecu
 	result = fire_bird::get_sql_result(st_ecu_identification, vec_parm);
 	if (!result.size())
 	{
-		c_log::print("ecu_id: %s,scrname: %s scrid查询空", ecu_id.c_str(), scrname.c_str());
+		c_log::print("c_data_stream_group:: search SCRID failed ,ecu_id: %s,scrname: %s", ecu_id.c_str(), scrname.c_str());
 		return;
 	}
 	m_scrid = result[0]["SCRID"].data_value;
@@ -453,7 +493,7 @@ c_data_stream_group::c_data_stream_group(int group_num, string ecu_id,string ecu
 	result = fire_bird::get_sql_result(st_id_data_stream, vec_parm);
 	if (!result.size())
 	{
-		c_log::print("scrid: %s 数据流组查询空", m_scrid.c_str(), scrname.c_str());
+		c_log::print("c_data_stream_group::search data_stream_group failed ,scrid: %s", m_scrid.c_str(), scrname.c_str());
 		return;
 	}
 	int cnt = 1;
@@ -511,7 +551,7 @@ c_data_stream::c_data_stream(map<string, data_unit> x_map,string ecu_id,string e
 		vector<map<string, data_unit>> result = fire_bird::get_sql_result(st_data_stream_receive_info, vec_parm);
 		if (!result.size())
 		{
-			c_log::print("receive_id: %s no result\n", m_receive_id.c_str());
+			c_log::print("c_data_stream::receive_id : %s no result\n", m_receive_id.c_str());
 			load_state = ds_load_fail;
 			return;
 		}
@@ -534,7 +574,7 @@ c_data_stream::c_data_stream(map<string, data_unit> x_map,string ecu_id,string e
 		}
 		if (flag)
 		{
-			c_log::print("receive_id :%s no actual parsname:%s\n", m_receive_id.c_str(), m_par_name.c_str());
+			c_log::print("c_data_stream::receive_id :%s no actual parsname:%s\n", m_receive_id.c_str(), m_par_name.c_str());
 			load_state = ds_load_fail;
 			return;
 		}
@@ -589,7 +629,7 @@ string c_data_stream::get_ser_unid(string par_name)
 	vector<map<string, data_unit>> result = fire_bird::get_sql_result(st_data_stream_serun_id, vec_parm);
 	if (!result.size())
 	{
-		c_log::print("ecu_id: %s ,par_name: %s get serunid noresult\n", m_ecu_id.c_str(), par_name.c_str());
+		c_log::print("c_data_stream::search SERUNID failed, ecu_id: %s ,veid: %s ,par_name: %s \n", m_ecu_id.c_str(), m_ecu_veid.c_str(), par_name.c_str());
 		return string();
 	}
 	else
@@ -614,8 +654,6 @@ string c_data_stream::get_rec_id(string ser_unid)
 	vector<map<string, data_unit>> result = fire_bird::get_sql_result(st_data_stream_serunfr_id, vec_parm);
 	return result[1]["SERUNFRID"].data_value;
 }
-
-
 
 string c_data_stream::get_request_cmd(string ser_unfrid)
 {
@@ -696,8 +734,8 @@ string c_data_stream::get_xxx_buffer()
 		}
 		else
 		{
-			c_format::insert("HEXA");
-			tbuffer = c_format::get_string_from_map("HEXA");
+			c_format::insert("\"HEXA\"");
+			tbuffer = c_format::get_string_from_map("\"HEXA\"");
 		}
 	}
 	else if (m_type == type_line_conver)
@@ -715,7 +753,6 @@ string c_data_stream::get_tail_buffer()
 
 	return rec_info;
 }
-
 
 bool c_data_stream::have_line_conver(string line_conver_id)
 {
@@ -757,7 +794,7 @@ c_dtc::c_dtc()
 
 c_dtc::c_dtc(string ecu_id,string ecu_veid)
 {
-	m_file_name = ecu_id + "_dtc.txt";
+	m_file_name = ecu_id + "_dtc";
 
 	vector<string> vec_parm;
 	vector<map<string, data_unit>> result;
@@ -769,7 +806,7 @@ c_dtc::c_dtc(string ecu_id,string ecu_veid)
 	}
 	else
 	{
-		c_log::print("ecu_veid: % s 查询SERID失败\n", ecu_veid.c_str());
+		c_log::print("c_dtc:: search SERID failed ,ecu_veid: % s\n", ecu_veid.c_str());
 		return;
 	}
 
@@ -783,7 +820,7 @@ c_dtc::c_dtc(string ecu_id,string ecu_veid)
 	}
 	else
 	{
-		c_log::print("ecu_veid: % s 查询SERUNID失败\n", ecu_veid.c_str());
+		c_log::print("c_dtc::search SERUNID failed ,ecu_veid: % s\n", ecu_veid.c_str());
 		return;
 	}
 
@@ -798,7 +835,7 @@ c_dtc::c_dtc(string ecu_id,string ecu_veid)
 	}
 	else
 	{
-		c_log::print("ecu_veid: % s 查询SERUNFRID失败\n", ecu_veid.c_str());
+		c_log::print("c_dtc:: search SERUNFRID failed ,ecu_veid: % s\n", ecu_veid.c_str());
 		return;
 	}
 
@@ -825,7 +862,7 @@ c_dtc::c_dtc(string ecu_id,string ecu_veid)
 	}
 	else
 	{
-		c_log::print("ecu_id:%s  ecu_veid: %s find SERID failed\n", ecu_id.c_str(), ecu_veid.c_str());
+		c_log::print("c_dtc::search SERID failed , ecu_id:%s  ecu_veid: %s \n", ecu_id.c_str(), ecu_veid.c_str());
 		return;
 	}
 
@@ -838,7 +875,7 @@ c_dtc::c_dtc(string ecu_id,string ecu_veid)
 	}
 	else
 	{
-		c_log::print("ecu_id:%s  ecu_veid: %s find SERUNFRID failed\n", ecu_id.c_str(), ecu_veid.c_str());
+		c_log::print("c_dtc::search SERUNFRID failed, ecu_id:%s  ecu_veid: %s \n", ecu_id.c_str(), ecu_veid.c_str());
 		return;
 	}
 	
@@ -857,60 +894,83 @@ c_dtc::c_dtc(string ecu_id,string ecu_veid)
 
 
 
-	vec_parm.clear();//get dtc lib
+
+	//vec_parm.clear();//get old dtc lib
+	//vec_parm.push_back(ecu_id);
+	//result = fire_bird::get_sql_result(st_dtc_scrname, vec_parm);
+	//for (size_t i = 0; i < result.size(); i++)
+	//{
+	//	int flag = 1;
+	//	for (size_t j = 0; j < m_vec_scrname.size(); j++)
+	//	{
+	//		if (!strcmp(m_vec_scrname[j].c_str(), result[i]["SCRNAME"].data_value.c_str()))
+	//		{
+	//			flag=0;
+	//			break;
+	//		}
+	//	}
+	//	if (flag)
+	//	{
+	//		m_vec_scrname.push_back(result[i]["SCRNAME"].data_value);
+	//	}
+	//}
+	//
+	//for (size_t i = 0; i < m_vec_scrname.size(); i++)
+	//{
+	//	vec_parm.clear();
+	//	vec_parm.push_back(ecu_id);
+	//	vec_parm.push_back(m_vec_scrname[i]);
+	//	result = fire_bird::get_sql_result(st_dtc_scrid, vec_parm);
+	//	if (result.size())
+	//	{
+	//		m_vec_scrid.push_back(result[0]["SCRID"].data_value);
+	//	}
+	//	else
+	//	{
+	//		c_log::print("c_dtc::search SCRID failed ,ecu_id: % s ,scrname : % s\n", ecu_id.c_str(), m_vec_scrname[i].c_str());
+	//		continue;
+	//	}
+	//}
+
+
+	vec_parm.clear();//get new dtc lib
 	vec_parm.push_back(ecu_id);
-	result = fire_bird::get_sql_result(st_dtc_scrname, vec_parm);
-	for (size_t i = 0; i < result.size(); i++)
+	vec_parm.push_back(ecu_id);
+	result = fire_bird::get_sql_result(st_dtc_newlib, vec_parm);
+	if (!result.size())
 	{
-		int flag = 1;
-		for (size_t j = 0; j < m_vec_scrname.size(); j++)
-		{
-			if (!strcmp(m_vec_scrname[j].c_str(), result[i]["SCRNAME"].data_value.c_str()))
-			{
-				flag=0;
-				break;
-			}
-		}
-		if (flag)
-		{
-			m_vec_scrname.push_back(result[i]["SCRNAME"].data_value);
-		}
+		c_log::print("c_dtc:: search DTC LIB failed , ecu_id : %s\n", ecu_id.c_str());
 	}
-	
-	for (size_t i = 0; i < m_vec_scrname.size(); i++)
-	{
-		vec_parm.clear();
-		vec_parm.push_back(ecu_id);
-		vec_parm.push_back(m_vec_scrname[i]);
-		result = fire_bird::get_sql_result(st_dtc_scrid, vec_parm);
-		if (result.size())
-		{
-			m_vec_scrid.push_back(result[0]["SCRID"].data_value);
-		}
-		else
-		{
-			c_log::print("ecu_id: % s scrname : % s 查询SCRID失败\n", ecu_id.c_str(), m_vec_scrname[i].c_str());
-			continue;
-		}
-	}
-	
+
 	string dtc_code;
 	int hex_dtc_code;
 	string dtc_descript;
-	for (size_t i = 0; i < m_vec_scrid.size(); i++)
+	string pre_code_name;
+	string tmp_code_name;
+	for (size_t i = 0; i < result.size(); i++)
 	{
-		vec_parm.clear();
-		vec_parm.push_back(m_vec_scrid[i]);
-		result = fire_bird::get_sql_result(st_dtc_lib, vec_parm);
-		for (size_t j = 0; j < result.size(); j++)
+		tmp_code_name = result[i]["DTCCODE"].data_value;
+		if (i==0)
 		{
-			dtc_code = result[j]["DTCCODE"].data_value;
+			pre_code_name = result[i]["DTCCODE"].data_value;
+
+			dtc_code = pre_code_name;
 			hex_dtc_code = stoi(dtc_code, 0, 16);
-			dtc_descript = c_du8::convert_du8_string(result[j]["DTCLABEL"].data_value);
+			dtc_descript = c_du8::convert_du8_string(result[i]["DTCLABEL"].data_value);
 			m_all_buffer += utils::convert_3_byte(hex_dtc_code) + "\t\"" + dtc_code + "\"\t\"" + dtc_descript + "\"\n";
 		}
+		else
+		{
+			if (strcmp(tmp_code_name.c_str(), pre_code_name.c_str()))
+			{
+				dtc_code = tmp_code_name;
+				hex_dtc_code = stoi(dtc_code, 0, 16);
+				dtc_descript = c_du8::convert_du8_string(result[i]["DTCLABEL"].data_value);
+				m_all_buffer += utils::convert_3_byte(hex_dtc_code) + "\t\"" + dtc_code + "\"\t\"" + dtc_descript + "\"\n";
+			}
+		} 
+		pre_code_name = tmp_code_name;
 	}
-
 }
 
 string c_dtc::get_rec_type(string m_serunfrid_rec)
@@ -928,14 +988,14 @@ string c_dtc::get_rec_type(string m_serunfrid_rec)
 		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_FAULT_TYPE" && result[3]["PARENCODING"].data_value == "BMP" && result[3]["ADDBITLENGTH"].data_value == "16" &&
 		result[4]["ISPBYTEPOS"].data_value == "1" && result[4]["PARSNAME"].data_value == "DTC_CODE"       && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBITLENGTH"].data_value == "16")
 	{
-		return "0x01";
+		return "01";
 	}
 
 	if (result.size() == 3 &&
 		result[1]["ISPBYTEPOS"].data_value == "1" && result[1]["PARSNAME"].data_value == "DTC_CODE"     && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "2" && 
 		result[2]["ISPBYTEPOS"].data_value == "3" && result[2]["PARSNAME"].data_value == "DTC_STATUS_1" && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "1")
 	{
-		return "0x02";
+		return "02";
 	}
 
 	if (result.size() == 4 &&
@@ -943,7 +1003,7 @@ string c_dtc::get_rec_type(string m_serunfrid_rec)
 		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_CODE"     && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "2" &&
 		result[3]["ISPBYTEPOS"].data_value == "3" && result[3]["PARSNAME"].data_value == "DTC_STATUS_1" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "1" )	
 	{
-		return "0x03";
+		return "03";
 	}
 
 	if (result.size() == 4 &&
@@ -951,7 +1011,7 @@ string c_dtc::get_rec_type(string m_serunfrid_rec)
 		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_CODE"     && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBITLENGTH"].data_value == "2" &&
 		result[3]["ISPBYTEPOS"].data_value == "3" && result[3]["PARSNAME"].data_value == "DTC_STATUS_1" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBITLENGTH"].data_value == "NULL")
 	{
-		return "0x04";
+		return "04";
 	}
 
 	if (result.size() == 6 &&
@@ -962,10 +1022,10 @@ string c_dtc::get_rec_type(string m_serunfrid_rec)
 		result[5]["ISPBYTEPOS"].data_value == "4" && result[5]["PARSNAME"].data_value == "DTC_STATUS_1"          && result[5]["PARENCODING"].data_value == "BMP" && result[5]["ADDBYTELENGTH"].data_value == "NULL")
 
 	{
-		return "0x05";
+		return "05";
 	}
 
-	return"0x00";
+	return"00";
 }
 
 
@@ -977,10 +1037,10 @@ c_ecu_variant_group::c_ecu_variant_group(vector<string> vec_var_group_str,string
 	
 	for (size_t i = 0; i < vec_var_group_str.size(); i++)
 	{
-		//if (ecu_id!="1042")
-		//{
-		//	continue;
-		//}
+		if (ecu_id!="1045")
+		{
+			continue;
+		}
 		ecu_var = c_ecu_variant(vec_var_group_str[i], ecu_id, m_func_map, cur_veh);
 		if (!ecu_var.is_null)
 		{

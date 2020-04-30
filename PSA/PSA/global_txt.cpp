@@ -28,7 +28,7 @@ void c_txt::insert_map(string key_str)
 		int num = m_map.size() + 1;
 		string num_str = "0x17,0xFF," + utils::convert_4_byte(num);
 		m_map[repared_str] = num_str;
-		buffer = num_str + "\t" + repared_str + "\n";
+		buffer = num_str + "\t\"" + repared_str + "\"\n";
 		fwrite(buffer.c_str(), 1, buffer.size(), fp_txt);
 	}
 }
