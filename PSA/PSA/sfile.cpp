@@ -179,7 +179,9 @@ c_cel c_cel::move_next(vector<menu_info>& xx_result)
 		if (subtree_cel.m_file_name != "MODEDEGRADE_EMF.s" &&
 			subtree_cel.m_file_name != "tlch_matrix.s"&&
 			subtree_cel.m_file_name != "MATRIX_TELEXX_CTX.s"&&
-			subtree_cel.m_file_name != "script_tokenizer.s")
+			subtree_cel.m_file_name != "script_tokenizer.s"
+			//&&subtree_cel.m_file_name != "contextualisation_gen.s"
+			)
 		{
 			subtree_cel.m_tree.process_tree(xx_result);
 			dest_cel = subtree_cel.move_next();
@@ -193,7 +195,10 @@ c_cel c_cel::move_next(vector<menu_info>& xx_result)
 	else if (m_str_name == "SubTreeEx")
 	{
 		c_sub_tree_ex_cel subtree_ex_cel(*this);
-		subtree_ex_cel.m_tree.process_tree(xx_result);
+		if (subtree_ex_cel.m_tree.m_file_name!="")
+		{
+			subtree_ex_cel.m_tree.process_tree(xx_result);
+		}
 		dest_cel = subtree_ex_cel.move_next();
 	}
 	else if (m_str_name == "Act")
@@ -455,7 +460,7 @@ string c_source_node::get_source()
 	{
 		c_text_buffer_node text_buffer_node(g_tree_info.back().m_vec_node[m_vec_son[0].m_line]);
 		string text_name = text_buffer_node.m_map_attr["name"];
-		string text_buf = g_map_textbuffer[text_name];
+		string text_buf = g_map_textbuffer[text_name];//c_tree::m_current_veh.map_global_textbuffer[text_name];
 		if (text_buffer_node.m_vec_son.size() == 0)
 		{
 			m_compare_value = text_buf;
@@ -777,8 +782,14 @@ void c_ecu_function_call_node::process_ecu_function()
 {
 	if (!strcmp(m_map_attr["name"].c_str(),"ECU_DESCRIPTOR"))
 	{
-		c_destnation_node dest_node(m_vec_son[1]);
-		g_map_textbuffer[dest_node.m_buffer_name] = c_tree::m_current_veh.m_ecu_descript;
+		for (size_t i = 0; i < m_vec_son.size(); i++)
+		{
+			if (m_vec_son[i].m_str_name=="Destination")
+			{
+				c_destnation_node dest_node(m_vec_son[i]);
+				g_map_textbuffer[dest_node.m_buffer_name] = c_tree::m_current_veh.m_ecu_descript;
+			}
+		}
 	}
 }
 

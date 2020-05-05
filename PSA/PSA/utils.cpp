@@ -281,7 +281,7 @@ file_type utils::get_func_file_type(string file_name)
 	{
 		return ft_standard;
 	}
-	else if (file_name.find("LECTURE_DEFAUTS") != -1)
+	else if (file_name.find("DEFAUTS") != -1)
 	{
 		return ft_defauts;
 	}

@@ -166,7 +166,6 @@ private:
 	
 	string m_ident_name;
 	string m_standard_name;
-
 };
 
 
@@ -219,7 +218,6 @@ public:
 public:
 	string get_comtype(string mod_id);
 	string get_veid(string veh_comtype);
-	string get_ecu_variant_head(char ecn_num, char var_num, short  name_num);
 public:
 	void print_ecus_txt();
 	void print_quality_txt();

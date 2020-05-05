@@ -70,6 +70,7 @@ c_veh::c_veh(string mod_name,string mod_id, string reserch_type)
 	vec_parm.push_back(reserch_type);
 	result = fire_bird::get_sql_result(st_ecu_info, vec_parm);
 	c_ecu t_ecu;
+	int cnt = 0;
 	for (size_t i = 0; i < result.size(); i++)
 	{
 		if (result[i]["FAMILYNAME"].data_value == "BMF" ||
@@ -118,15 +119,6 @@ string c_veh::get_veid(string veh_comtype)
 }
 
 
-string c_veh::get_ecu_variant_head(char ecu_num,char var_num,short name_num)
-{
-	string buffer = utils::convert_2_byte(stoi(m_mod_id))+",";
-	buffer += utils::convert_1_byte(ecu_num)+",";
-	buffer += utils::convert_1_byte(var_num) + ",";
-	buffer += utils::convert_2_byte(name_num) + "\t";
-	return buffer;
-}
-
 
 void c_veh::print_ecus_txt()
 {
@@ -145,6 +137,7 @@ void c_veh::print_ecus_txt()
 	}
 	fclose(fp);
 }
+
 
 void c_veh::print_quality_txt()
 {
@@ -233,6 +226,7 @@ c_ecu::c_ecu(string name, string label, string ve_id,c_current_veh& cur_veh)
 			else
 			{
 				cur_veh.m_ecu_type = result[i-1]["ECUNAME"].data_value;
+				vec_str.push_back(result[i-1]["VARIANTES"].data_value);
 				c_ecu_variant_group t_var_group = c_ecu_variant_group(vec_str, result[i - 1]["ECUID"].data_value, cur_veh);
 				m_vec_variant_group.push_back(t_var_group);
 				vec_str.clear();
@@ -240,6 +234,9 @@ c_ecu::c_ecu(string name, string label, string ve_id,c_current_veh& cur_veh)
 		}
 		pre_str = tem_str;
 	}
+	cur_veh.m_ecu_type = result.back()["ECUNAME"].data_value;
+	c_ecu_variant_group t_var_group = c_ecu_variant_group(vec_str, result.back()["ECUID"].data_value, cur_veh);
+	m_vec_variant_group.push_back(t_var_group);
 }
 
 string c_ecu::get_buffer()
@@ -300,8 +297,8 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 
 
 	m_buffer = "\"" + cur_veh.m_moudle_name+","+ m_name + ","+m_ecu_id+","+ m_variant_name +"," + m_variant_descript +","+ m_re_coframe + "," + m_cmd1 + "," + m_cmd2 + "," + m_IDEMNEMOVALUE + "," + m_pos + "," + m_length + ",";
-	vector<menu_info>menu_func_result = get_func_file(cur_veh);
 	get_global_buffer(cur_veh);//获取全局的global buffer 到veh.map
+	vector<menu_info>menu_func_result = get_func_file(cur_veh);
 	string new_file_name;
 	for (size_t i = 0; i < menu_func_result.size(); i++)
 	{
@@ -333,10 +330,6 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 			if (!m_func_map.count(new_file_name))
 			{
 				vector<string> vec_scrname;
-				if (menu_func_result[i].m_file_name=="T7_HDI_SID807_BR2_mesures_parametres_standard_312.s")
-				{
-					int cc = 0;
-				}
 				c_tree t_tree(menu_func_result[i].m_file_path, menu_func_result[i].m_file_name, cur_veh);
 				c_cel t_cel;
 				t_tree.get_vec_scrname(vec_scrname, t_cel);
@@ -396,7 +389,7 @@ vector<menu_info> c_ecu_variant::get_func_file( c_current_veh& cur_veh)
 	t_tree.quick_scan(menu_func_result);
 	if (!menu_func_result.size())
 	{
-		c_log::print("c_ecu_variant::获取ecu功能menu失败 %s  %s\n", m_variant_name, m_ecu_id);
+		c_log::print("c_ecu_variant::获取ecu功能menu失败 %s  %s\n", m_variant_name.c_str(), m_ecu_id.c_str());
 	}
 	return menu_func_result;
 }
@@ -422,8 +415,7 @@ void c_ecu_variant::get_global_buffer(c_current_veh& cur_veh)
 	}
 
 
-	if (new_file_name!=""&& new_file_name!="MENU__T7__ABRASR__ABS81.s"
-		&& new_file_name != "MENU__T84__AUTORADIO__AUTORADIO.s")
+	if (new_file_name!="")
 	{
 		map<string, string> tmp_map;
 		t_tree = c_tree(new_file_path, new_file_name, cur_veh);
@@ -499,10 +491,6 @@ c_data_stream_group::c_data_stream_group(int group_num, string ecu_id,string ecu
 	int cnt = 1;
 	for (size_t i = 0; i < result.size(); i++)
 	{
-		//if (i==7&& scrname=="MESUREPARAMETRE3")
-		//{
-		//	int cc = 0;
-		//}
 		c_data_stream tt= c_data_stream(result[i],ecu_id, ecu_veid);
 		if (tt.load_state==ds_load_success)
 		{
@@ -850,8 +838,7 @@ c_dtc::c_dtc(string ecu_id,string ecu_veid)
 			m_req_cmd += result[i]["ISPVALUE"].data_value;
 		}
 	}
-	m_rec_type = get_rec_type(m_serunfrid_rec);//get 
-
+	m_rec_type = get_rec_type(m_serunfrid_rec);//get dtc type/////////
 
 	vec_parm.clear();
 	vec_parm.push_back(ecu_veid);
@@ -891,46 +878,6 @@ c_dtc::c_dtc(string ecu_id,string ecu_veid)
 	}
 
 	m_quality_buffer = m_req_cmd + "," + m_rec_type + "," + m_clr_cmd;//获取dtc 信息
-
-
-
-
-	//vec_parm.clear();//get old dtc lib
-	//vec_parm.push_back(ecu_id);
-	//result = fire_bird::get_sql_result(st_dtc_scrname, vec_parm);
-	//for (size_t i = 0; i < result.size(); i++)
-	//{
-	//	int flag = 1;
-	//	for (size_t j = 0; j < m_vec_scrname.size(); j++)
-	//	{
-	//		if (!strcmp(m_vec_scrname[j].c_str(), result[i]["SCRNAME"].data_value.c_str()))
-	//		{
-	//			flag=0;
-	//			break;
-	//		}
-	//	}
-	//	if (flag)
-	//	{
-	//		m_vec_scrname.push_back(result[i]["SCRNAME"].data_value);
-	//	}
-	//}
-	//
-	//for (size_t i = 0; i < m_vec_scrname.size(); i++)
-	//{
-	//	vec_parm.clear();
-	//	vec_parm.push_back(ecu_id);
-	//	vec_parm.push_back(m_vec_scrname[i]);
-	//	result = fire_bird::get_sql_result(st_dtc_scrid, vec_parm);
-	//	if (result.size())
-	//	{
-	//		m_vec_scrid.push_back(result[0]["SCRID"].data_value);
-	//	}
-	//	else
-	//	{
-	//		c_log::print("c_dtc::search SCRID failed ,ecu_id: % s ,scrname : % s\n", ecu_id.c_str(), m_vec_scrname[i].c_str());
-	//		continue;
-	//	}
-	//}
 
 
 	vec_parm.clear();//get new dtc lib
@@ -982,48 +929,124 @@ string c_dtc::get_rec_type(string m_serunfrid_rec)
 	result = fire_bird::get_sql_result(st_dtc_rec_info, vec_parm);
 
 
-	if (result.size() == 5 &&
-		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"         && result[1]["PARENCODING"].data_value == "HEXA"&& result[1]["ADDBITLENGTH"].data_value == "NULL"&&
-		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_ORIGIN"     && result[2]["PARENCODING"].data_value == "BMP" && result[2]["ADDBITLENGTH"].data_value == "16" &&
-		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_FAULT_TYPE" && result[3]["PARENCODING"].data_value == "BMP" && result[3]["ADDBITLENGTH"].data_value == "16" &&
-		result[4]["ISPBYTEPOS"].data_value == "1" && result[4]["PARSNAME"].data_value == "DTC_CODE"       && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBITLENGTH"].data_value == "16")
+
+	if (result.size() == 3 &&
+		result[1]["ISPBYTEPOS"].data_value == "1" && result[1]["PARSNAME"].data_value == "DTC_CODE"     && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "2" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL"&&
+		result[2]["ISPBYTEPOS"].data_value == "3" && result[2]["PARSNAME"].data_value == "DTC_STATUS_1" && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "1" && result[2]["ADDBITLENGTH"].data_value == "0" && result[2]["ADDBITMASK"].data_value == "NULL")
 	{
-		return "01";
+		return "20";
 	}
 
 	if (result.size() == 3 &&
-		result[1]["ISPBYTEPOS"].data_value == "1" && result[1]["PARSNAME"].data_value == "DTC_CODE"     && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "2" && 
-		result[2]["ISPBYTEPOS"].data_value == "3" && result[2]["PARSNAME"].data_value == "DTC_STATUS_1" && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "1")
+		result[1]["ISPBYTEPOS"].data_value == "1" && result[1]["PARSNAME"].data_value == "DTC_CODE"		&& result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "2" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL"&&
+		result[2]["ISPBYTEPOS"].data_value == "3" && result[2]["PARSNAME"].data_value == "DTC_STATUS_1" && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "0" && result[2]["ADDBITLENGTH"].data_value == "8" && result[2]["ADDBITMASK"].data_value == "11111111"
+		)
 	{
-		return "02";
+		return "21";
 	}
 
 	if (result.size() == 4 &&
-		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"       && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" &&
-		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_CODE"     && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "2" &&
-		result[3]["ISPBYTEPOS"].data_value == "3" && result[3]["PARSNAME"].data_value == "DTC_STATUS_1" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "1" )	
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"       && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_CODE"     && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "2" && result[2]["ADDBITLENGTH"].data_value == "0" && result[2]["ADDBITMASK"].data_value == "NULL" &&
+		result[3]["ISPBYTEPOS"].data_value == "3" && result[3]["PARSNAME"].data_value == "DTC_STATUS_1" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "1" && result[3]["ADDBITLENGTH"].data_value == "0" && result[3]["ADDBITMASK"].data_value == "NULL")
 	{
-		return "03";
+		return "30";
 	}
 
 	if (result.size() == 4 &&
-		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"       && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBITLENGTH"].data_value == "1" && 
-		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_CODE"     && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBITLENGTH"].data_value == "2" &&
-		result[3]["ISPBYTEPOS"].data_value == "3" && result[3]["PARSNAME"].data_value == "DTC_STATUS_1" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBITLENGTH"].data_value == "NULL")
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"		&& result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_CODE"		&& result[2]["PARENCODING"].data_value == "ENUM" && result[2]["ADDBYTELENGTH"].data_value == "2" && result[2]["ADDBITLENGTH"].data_value == "0" && result[2]["ADDBITMASK"].data_value == "NULL" &&
+		result[3]["ISPBYTEPOS"].data_value == "3" && result[3]["PARSNAME"].data_value == "DTC_STATUS_1" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "1" && result[3]["ADDBITLENGTH"].data_value == "0" && result[3]["ADDBITMASK"].data_value == "NULL")
 	{
-		return "04";
+		return "31";
+	}
+
+
+	if (result.size() == 4 &&
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"       && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_CODE"		&& result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "2" && result[2]["ADDBITLENGTH"].data_value == "0" && result[2]["ADDBITMASK"].data_value == "NULL" &&
+		result[3]["ISPBYTEPOS"].data_value == "3" && result[3]["PARSNAME"].data_value == "DTC_STATUS_1" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "0" && result[3]["ADDBITLENGTH"].data_value == "8" && result[3]["ADDBITMASK"].data_value == "11111111")
+	{
+		return "32";
+	}
+
+	if (result.size() == 4 &&
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"		  && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_FAULT_TYPE" && result[2]["PARENCODING"].data_value == "BMP"  && result[2]["ADDBYTELENGTH"].data_value == "0" && result[2]["ADDBITLENGTH"].data_value == "16" && result[2]["ADDBITMASK"].data_value == "1111000000000000" &&
+		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_CODE"		  && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "0" && result[3]["ADDBITLENGTH"].data_value == "16" && result[3]["ADDBITMASK"].data_value == "0000111111111111")
+	{
+		return "33";
+	}
+
+	if (result.size() == 5 &&
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"         && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_ORIGIN"	  && result[2]["PARENCODING"].data_value == "BMP"  && result[2]["ADDBYTELENGTH"].data_value == "0" && result[2]["ADDBITLENGTH"].data_value == "16" && result[2]["ADDBITMASK"].data_value == "1000000000000000" &&
+		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_FAULT_TYPE" && result[3]["PARENCODING"].data_value == "BMP"  && result[3]["ADDBYTELENGTH"].data_value == "0" && result[3]["ADDBITLENGTH"].data_value == "16" && result[3]["ADDBITMASK"].data_value == "0111000000000000" &&
+		result[4]["ISPBYTEPOS"].data_value == "1" && result[4]["PARSNAME"].data_value == "DTC_CODE"       && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBYTELENGTH"].data_value == "0" && result[4]["ADDBITLENGTH"].data_value == "16" && result[4]["ADDBITMASK"].data_value == "0000111111111111")
+	{
+		return "40";
+	}
+
+	if (result.size() == 5 &&
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"		  && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_ORIGIN"	  && result[2]["PARENCODING"].data_value == "BMP"  && result[2]["ADDBYTELENGTH"].data_value == "0" && result[2]["ADDBITLENGTH"].data_value == "16" && result[2]["ADDBITMASK"].data_value == "1000000000000000" &&
+		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_FAULT_TYPE" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "0" && result[3]["ADDBITLENGTH"].data_value == "16" && result[3]["ADDBITMASK"].data_value == "0111000000000000" &&
+		result[4]["ISPBYTEPOS"].data_value == "1" && result[4]["PARSNAME"].data_value == "DTC_CODE"		  && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBYTELENGTH"].data_value == "0" && result[4]["ADDBITLENGTH"].data_value == "16" && result[4]["ADDBITMASK"].data_value == "0000111111111111")
+	{
+		return "41";
+	}
+
+	if (result.size() == 5 &&
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"		  && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_ORIGIN"	  && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "0" && result[2]["ADDBITLENGTH"].data_value == "16" && result[2]["ADDBITMASK"].data_value == "1000000000000000" &&
+		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_FAULT_TYPE" && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "0" && result[3]["ADDBITLENGTH"].data_value == "16" && result[3]["ADDBITMASK"].data_value == "0111000000000000" &&
+		result[4]["ISPBYTEPOS"].data_value == "1" && result[4]["PARSNAME"].data_value == "DTC_CODE"		  && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBYTELENGTH"].data_value == "0" && result[4]["ADDBITLENGTH"].data_value == "16" && result[4]["ADDBITMASK"].data_value == "0000111111111111")
+	{
+		return "42";
+	}
+
+	if (result.size() == 5 &&
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "NRODTC"		  && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "1" && result[2]["PARSNAME"].data_value == "DTC_ORIGIN"	  && result[2]["PARENCODING"].data_value == "NULL" && result[2]["ADDBYTELENGTH"].data_value == "0" && result[2]["ADDBITLENGTH"].data_value == "16" && result[2]["ADDBITMASK"].data_value == "1000000000000000" &&
+		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_FAULT_TYPE" && result[3]["PARENCODING"].data_value == "BMP" && result[3]["ADDBYTELENGTH"].data_value == "0" && result[3]["ADDBITLENGTH"].data_value == "16" && result[3]["ADDBITMASK"].data_value == "0111000000000000" &&
+		result[4]["ISPBYTEPOS"].data_value == "1" && result[4]["PARSNAME"].data_value == "DTC_CODE"		  && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBYTELENGTH"].data_value == "0" && result[4]["ADDBITLENGTH"].data_value == "16" && result[4]["ADDBITMASK"].data_value == "0000111111111111")
+	{
+		return "43";
 	}
 
 	if (result.size() == 6 &&
-		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "ReportDtcByStatusMask" && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1"&&
-		result[2]["ISPBYTEPOS"].data_value == "3" && result[2]["PARSNAME"].data_value == "DTCSAM"                && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "1" &&
-		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_CODE"              && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "2" && 
-		result[4]["ISPBYTEPOS"].data_value == "3" && result[4]["PARSNAME"].data_value == "DTC_FAULT_TYPE"        && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBYTELENGTH"].data_value == "1" &&
-		result[5]["ISPBYTEPOS"].data_value == "4" && result[5]["PARSNAME"].data_value == "DTC_STATUS_1"          && result[5]["PARENCODING"].data_value == "BMP" && result[5]["ADDBYTELENGTH"].data_value == "NULL")
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "ReportDtcByStatusMask" && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL"&&
+		result[2]["ISPBYTEPOS"].data_value == "3" && result[2]["PARSNAME"].data_value == "DTCSAM"                && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "1" && result[2]["ADDBITLENGTH"].data_value == "0" && result[2]["ADDBITMASK"].data_value == "NULL"&&
+		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_CODE"              && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "2" && result[3]["ADDBITLENGTH"].data_value == "0" && result[3]["ADDBITMASK"].data_value == "NULL"&&
+		result[4]["ISPBYTEPOS"].data_value == "3" && result[4]["PARSNAME"].data_value == "DTC_FAULT_TYPE"        && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBYTELENGTH"].data_value == "1" && result[4]["ADDBITLENGTH"].data_value == "0" && result[4]["ADDBITMASK"].data_value == "NULL"&&
+		result[5]["ISPBYTEPOS"].data_value == "4" && result[5]["PARSNAME"].data_value == "DTC_STATUS_1"          && result[5]["PARENCODING"].data_value == "BMP"  && result[5]["ADDBYTELENGTH"].data_value == "0" && result[5]["ADDBITLENGTH"].data_value == "8" && result[5]["ADDBITMASK"].data_value == "00100110")
 
 	{
-		return "05";
+		return "50";
 	}
+
+	if (result.size() == 6 &&
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "ReportDtcByStatusMask" && result[1]["PARENCODING"].data_value == "ENUM" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "3" && result[2]["PARSNAME"].data_value == "DTCSAM"				 && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "1" && result[2]["ADDBITLENGTH"].data_value == "0" && result[2]["ADDBITMASK"].data_value == "NULL" &&
+		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_CODE"				 && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "2" && result[3]["ADDBITLENGTH"].data_value == "0" && result[3]["ADDBITMASK"].data_value == "NULL" &&
+		result[4]["ISPBYTEPOS"].data_value == "3" && result[4]["PARSNAME"].data_value == "DTC_FAULT_TYPE"		 && result[4]["PARENCODING"].data_value == "ENUM" && result[4]["ADDBYTELENGTH"].data_value == "1" && result[4]["ADDBITLENGTH"].data_value == "0" && result[4]["ADDBITMASK"].data_value == "NULL" &&
+		result[5]["ISPBYTEPOS"].data_value == "4" && result[5]["PARSNAME"].data_value == "DTC_STATUS_1"			 && result[5]["PARENCODING"].data_value == "BMP"  && result[5]["ADDBYTELENGTH"].data_value == "0" && result[5]["ADDBITLENGTH"].data_value == "8"  && result[5]["ADDBITMASK"].data_value == "00001001")
+
+	{
+		return "51";
+	}
+
+	if (result.size() == 6 &&
+		result[1]["ISPBYTEPOS"].data_value == "2" && result[1]["PARSNAME"].data_value == "ReportDtcByStatusMask" && result[1]["PARENCODING"].data_value == "HEXA" && result[1]["ADDBYTELENGTH"].data_value == "1" && result[1]["ADDBITLENGTH"].data_value == "0" && result[1]["ADDBITMASK"].data_value == "NULL" &&
+		result[2]["ISPBYTEPOS"].data_value == "3" && result[2]["PARSNAME"].data_value == "DTCSAM"				 && result[2]["PARENCODING"].data_value == "HEXA" && result[2]["ADDBYTELENGTH"].data_value == "1" && result[2]["ADDBITLENGTH"].data_value == "0" && result[2]["ADDBITMASK"].data_value == "NULL" &&
+		result[3]["ISPBYTEPOS"].data_value == "1" && result[3]["PARSNAME"].data_value == "DTC_CODE"				 && result[3]["PARENCODING"].data_value == "HEXA" && result[3]["ADDBYTELENGTH"].data_value == "2" && result[3]["ADDBITLENGTH"].data_value == "0" && result[3]["ADDBITMASK"].data_value == "NULL" &&
+		result[4]["ISPBYTEPOS"].data_value == "3" && result[4]["PARSNAME"].data_value == "DTC_FAULT_TYPE"		 && result[4]["PARENCODING"].data_value == "HEXA" && result[4]["ADDBYTELENGTH"].data_value == "1" && result[4]["ADDBITLENGTH"].data_value == "0" && result[4]["ADDBITMASK"].data_value == "NULL" &&
+		result[5]["ISPBYTEPOS"].data_value == "4" && result[5]["PARSNAME"].data_value == "DTC_STATUS_1"			 && result[5]["PARENCODING"].data_value == "BMP"  && result[5]["ADDBYTELENGTH"].data_value == "0" && result[5]["ADDBITLENGTH"].data_value == "8" && result[5]["ADDBITMASK"].data_value == "00001001")
+
+	{
+		return "52";
+	}
+
 
 	return"00";
 }
@@ -1037,10 +1060,10 @@ c_ecu_variant_group::c_ecu_variant_group(vector<string> vec_var_group_str,string
 	
 	for (size_t i = 0; i < vec_var_group_str.size(); i++)
 	{
-		if (ecu_id!="1045")
-		{
-			continue;
-		}
+		//if (ecu_id!="1052")
+		//{
+		//	continue;
+		//}
 		ecu_var = c_ecu_variant(vec_var_group_str[i], ecu_id, m_func_map, cur_veh);
 		if (!ecu_var.is_null)
 		{

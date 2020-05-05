@@ -1,2 +1,7 @@
-﻿  basic_data.cpp
+﻿  sfile.cpp
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(15,15): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(473,17): warning C4018: “>”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(488,17): warning C4018: “>”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(969,52): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(1074,20): warning C4018: “<”: 有符号/无符号不匹配
   PSA.vcxproj -> G:\code\C++\cplus-my-workcode\PSA\Debug\PSA.exe

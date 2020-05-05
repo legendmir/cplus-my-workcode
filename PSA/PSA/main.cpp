@@ -21,15 +21,17 @@ int main()
 	//c_current_veh t_config;
 	//t_config.m_comtype = "T7";
 	//t_config.m_moudle_name = "T73_Chine";
-	//t_config.m_ecu_type = "BOITIER_TELEMATIQUE";
-	//t_config.m_ecu_descript = "BOITIER_TELEMATIQUE|VSOFT60";
-	//c_tree xxx("vehicle\\T7\\ABRASR\\ABS81", "T7_ABS81_mesures_parametres_standard.s", t_config);
-	//
+	//t_config.m_ecu_type = "V46_21";
+	//t_config.m_ecu_descript = "V46_21";
+	//c_tree xxx("vehicle\\t7\\inj\\V46_21", "MENU__T7__INJ__V46_21.s", t_config);
+	//vector<menu_info> x;
+	//xxx.process_tree(x);
+
+
+
 	//vector<string> vec_src;
 	//c_cel t_cel;
 	//xxx.get_vec_scrname(vec_src, t_cel);
-
-
 	//sql_info st_ecu_variant_one_line = g_sqls.sql_map[st_ecu_variant_list_one_line_info];
 	//vector<string> vec_str1;
 	//vec_str1.push_back("BSI_T7_V1");
