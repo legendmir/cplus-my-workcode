@@ -294,3 +294,20 @@ file_type utils::get_func_file_type(string file_name)
 		return ft_action;
 	}
 }
+
+string utils::convert_bit2_int(string bit_str)
+{
+	const char* p = bit_str.c_str();
+	unsigned int len = bit_str.size();
+	int result = 0;
+	unsigned int i = 0;
+	for (i = len - 1;; i--)
+	{
+		result += (p[i] - '0') * pow(2, len - i - 1);
+		if (i==0)
+		{
+			break;
+		}
+	}
+	return utils::convert_2_byte(result);
+}

@@ -10,6 +10,12 @@ extern map<string, string> g_map_textbuffer;
 
 int main()
 {
+	c_format::insert("\"HEXA\"");
+	c_format::insert("\"(.{2})(.{3})(.{3})(.{2}),$1 $2 $3 $4\"");
+	c_format::insert("\"(.{3})(.{3}),96 $1 $2 80\"");
+	c_format::insert("\"(.{2})(.{2}),$1.$2\"");
+	c_format::insert("\"(.{3})(.{3})(.{2}),96 $1 $2 $3\"");
+	c_format::insert("\"API_DATE_from_JJMMAA_UNM\"");
 
 	//N6A|NFU|ME749|FLEXFUEL|REC
 	//N6A|NSB|NFU|ME749|FLEXFUEL|REC
@@ -21,13 +27,11 @@ int main()
 	//c_current_veh t_config;
 	//t_config.m_comtype = "T7";
 	//t_config.m_moudle_name = "T73_Chine";
-	//t_config.m_ecu_type = "V46_21";
-	//t_config.m_ecu_descript = "V46_21";
-	//c_tree xxx("vehicle\\t7\\inj\\V46_21", "MENU__T7__INJ__V46_21.s", t_config);
-	//vector<menu_info> x;
-	//xxx.process_tree(x);
-
-
+	//t_config.m_ecu_type = "ALARME";
+	//t_config.m_ecu_descript = "";
+	//c_tree xxx("Vehicle\\T7\\ALARMES\\ALARME", "T7_ALARME_mesures_parametres_standard.s", t_config);
+	//vector<string> vec_str;
+	//xxx.get_vec_scrname(vec_str);
 
 	//vector<string> vec_src;
 	//c_cel t_cel;
@@ -46,6 +50,10 @@ int main()
 	//c_data_stream_group xx;
 	//xx.load_data("1041", "MESUREPARAMETRE11");
 	//xx.print("C:\\Users\\Administrator\\Desktop\\PSA_data\\information.txt");
+
+	//string aa = "1111";
+	//int cc=utils::convert_bit2_int(aa);
+
 
 	c_veh xx= c_veh("T73_Chine", "116");
 	xx.print_ecus_txt();

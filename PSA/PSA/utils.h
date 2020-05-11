@@ -41,5 +41,6 @@ public:
 	static string get_menu_file_name(string file_path);
 	static string get_variant_file_name(string file_path);
 	static file_type get_func_file_type(string file_name);
+	static string convert_bit2_int(string bit_str);
 
 };

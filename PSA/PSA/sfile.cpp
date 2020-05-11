@@ -1086,54 +1086,18 @@ void c_tree::quick_scan(vector<menu_info>& xx_result)
 	}
 }
 
-void c_tree::get_vec_scrname(vector<string>&vec_scr_name,c_cel& x_cel)
+void c_tree::get_vec_scrname(vector<string>&vec_scr_name)
 {
-	c_cel pre_cel;
-	c_cel next_cel;
-	vector<menu_info> xx_result;
-	if (x_cel.m_str_name=="")
+	for (size_t i = 0; i < m_tree_info.m_vec_node.size(); i++)
 	{
-		pre_cel = g_tree_info.back().m_vec_cel[0];
-		next_cel = pre_cel;
-	}
-	else
-	{
-		pre_cel = x_cel;
-		next_cel = pre_cel;
-	}
-	while (next_cel.m_str_name != "End")
-	{
-		if (next_cel.m_str_name == "DiagScreen")
+		if (m_tree_info.m_vec_node[i].m_str_name == "DiagScreen")
 		{
-			c_diag_screen tt = c_diag_screen(next_cel);
-			vec_scr_name.push_back(tt.m_scr_name);
-			return;
-		}
-		else if(next_cel.m_str_name == "MenuScreen")
-		{
-			c_menu_screen_cel menu_screen_cel= c_menu_screen_cel(next_cel, xx_result);
-			for (size_t i = 0; i < menu_screen_cel.vec_next_cel.size(); i++)
-			{
-				get_vec_scrname(vec_scr_name, menu_screen_cel.vec_next_cel[i]);
-			}
-			return;
-		}
-		else
-		{
-			if (next_cel.m_str_name == "")
-			{
-				return;
-			}
-			next_cel = pre_cel.move_next(xx_result);
-			pre_cel = next_cel;
+			vec_scr_name.push_back(c_diag_screen(m_tree_info.m_vec_node[i]).m_scr_name);
 		}
 
 	}
 	return;
-	//g_tree_info.pop_back();
 }
-
-
 
 bool c_tree::is_only_one_menu()
 {

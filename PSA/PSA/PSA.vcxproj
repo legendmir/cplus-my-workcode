@@ -164,6 +164,7 @@
     <ClInclude Include="fire_bird.h" />
     <ClInclude Include="sfile.h" />
     <ClInclude Include="sqls.h" />
+    <ClInclude Include="标头.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fbclient.dll" />

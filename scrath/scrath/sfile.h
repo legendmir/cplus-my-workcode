@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include<string>
 #include<map>
 #include<vector>
@@ -289,14 +288,16 @@ class c_tree {
 public:
 	c_tree();
 	c_tree(string file_path, c_current_veh& current_veh);
+
+	static c_cel get_cel_by_pos(string pos);
+	void run_script(vector<string>& vec_item, vector<string> vec_input_cohice,string& output_file);
+
+	void run_script(c_current_veh& current_veh);
+
+private:
 	void init_vec_node();
 	void init_vec_cel();
-	static c_cel get_cel_by_pos(string pos);
 
-
-
-	void run_script(vector<string>& vec_item, vector<string> vec_input_cohice,string& output_file);
-	//void process_tree();
 public:
 	c_global_tree_info m_tree_info;
 	string m_file_path;

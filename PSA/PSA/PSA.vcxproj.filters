@@ -48,6 +48,9 @@
     <ClInclude Include="path.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="标头.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="sfile.cpp">

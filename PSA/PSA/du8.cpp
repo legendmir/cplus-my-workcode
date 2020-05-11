@@ -144,6 +144,10 @@ string c_du8::convert_du8_string(string str)
 	{
 		return "VDO-Continental";
 	}
+	if (str == "@TVDO")
+	{
+		return "VDO";
+	}
 	unsigned int i = 0;
 	vector<string>vec_str = split_buffer(str);
 	vector<string>vec_xxx;

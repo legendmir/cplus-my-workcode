@@ -25,7 +25,7 @@ class c_format
 public:
 	c_format();
 public:
-	static void insert(string str);
+	static void insert(string par_name);
 	static string get_string_from_map(string str);
 	static map<string, string>m_map;
 	static FILE* fp_format;

@@ -19,8 +19,6 @@ public:
 };
 
 
-enum stream_type { type_tab_conver, type_line_conver,type_format};
-
 
 
 
@@ -58,6 +56,9 @@ enum ds_load_result {
 	ds_load_fail,
 };
 
+enum stream_type { type_tab_conver, type_line_conver, type_format };
+
+
 class c_data_stream
 {
 public:
@@ -78,6 +79,7 @@ private:
 	string get_tail_buffer();
 	string get_tab_conver_buffer();
 private:
+	stream_type get_type();
 
 	bool have_line_conver(string line_conver_id);
 public:
@@ -107,6 +109,8 @@ private:
 	string m_rec_pos;
 	string m_rec_len;
 	string m_rec_order;
+	string m_rec_bit_len;
+	string m_rec_bit_mask;
 	string m_line_conver_id;
 
 	vector<c_tab_conver>m_vec_tab_conver;
@@ -127,7 +131,6 @@ private:
 	string m_scrid;
 	string m_name;
 	string m_ecu_id;
-
 };
 
 
@@ -159,7 +162,6 @@ private:
 	string m_pos;
 	string m_length;
 	vector<string> m_vec_func_file;
-
 
 	c_data_stream_group m_ident_group;
 	c_data_stream_group m_standard_group;

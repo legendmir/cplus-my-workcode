@@ -1,0 +1,11 @@
+﻿  sfile1.cpp
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.h(13,2): warning C4091: “typedef ”: 没有声明变量时忽略“menu_info”的左侧
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.h(20,2): warning C4091: “typedef ”: 没有声明变量时忽略“msg_info”的左侧
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.h(26,2): warning C4091: “typedef ”: 没有声明变量时忽略“ecu_func”的左侧
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.h(34,2): warning C4091: “typedef ”: 没有声明变量时忽略“subtree_info”的左侧
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.h(47,2): warning C4091: “typedef ”: 没有声明变量时忽略“session_info”的左侧
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.cpp(17,15): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.cpp(435,17): warning C4018: “>”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.cpp(450,17): warning C4018: “>”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA_script\sfile1.cpp(931,52): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
+  PSA_script.vcxproj -> G:\code\C++\cplus-my-workcode\PSA\Debug\PSA_script.exe

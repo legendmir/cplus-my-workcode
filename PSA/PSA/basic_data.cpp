@@ -80,6 +80,10 @@ c_veh::c_veh(string mod_name,string mod_id, string reserch_type)
 		{
 			continue;
 		}
+		//if (result[i]["FAMILYNAME"].data_value != "ABS")
+		//{
+		//	continue;
+		//}
 		m_cur_veh.m_comtype = m_comtype;
 		m_cur_veh.m_moudle_name = m_mod_name;
 		m_cur_veh.m_file_name = result[i]["FILENAME"].data_value;
@@ -119,7 +123,6 @@ string c_veh::get_veid(string veh_comtype)
 }
 
 
-
 void c_veh::print_ecus_txt()
 {
 	string file_name = "ecu_" + m_mod_id + ".txt";
@@ -145,7 +148,6 @@ void c_veh::print_quality_txt()
 	string xpath = c_path::output_path + file_name;
 	FILE* fp = fopen(xpath.c_str(), "w");
 
-
 	string head = utils::convert_2_byte(stoi(m_mod_id));
 	string ecu_num;
 	string group_num;
@@ -169,7 +171,6 @@ void c_veh::print_quality_txt()
 	}
 	fclose(fp);
 }
-
 
 
 c_ecu::c_ecu()
@@ -314,7 +315,7 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 				vector<string> vec_scrname;
 				c_tree t_tree(menu_func_result[i].m_file_path, menu_func_result[i].m_file_name, cur_veh);
 				c_cel t_cel;
-				t_tree.get_vec_scrname(vec_scrname, t_cel);
+				t_tree.get_vec_scrname(vec_scrname);
 				string all_buffer;
 				for (size_t i = 0; i < vec_scrname.size(); i++)
 				{
@@ -332,7 +333,7 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 				vector<string> vec_scrname;
 				c_tree t_tree(menu_func_result[i].m_file_path, menu_func_result[i].m_file_name, cur_veh);
 				c_cel t_cel;
-				t_tree.get_vec_scrname(vec_scrname, t_cel);
+				t_tree.get_vec_scrname(vec_scrname);
 				string all_buffer;
 				for (size_t i = 0; i < vec_scrname.size(); i++)
 				{
@@ -414,7 +415,6 @@ void c_ecu_variant::get_global_buffer(c_current_veh& cur_veh)
 		variant_file_name = utils::get_variant_file_name(new_file_path);
 	}
 
-
 	if (new_file_name!="")
 	{
 		map<string, string> tmp_map;
@@ -477,8 +477,9 @@ c_data_stream_group::c_data_stream_group(int group_num, string ecu_id,string ecu
 	m_name = result[0]["SCRTITRE"].data_value;
 	m_ecu_id = result[0]["ECUID"].data_value;
 	
-	c_txt::insert_map(m_name);
-	m_buffer = utils::convert_1_byte(group_num)+",0x00,0x00\t" + c_txt::get_str_from_map(m_name) + "\n";
+	//c_txt::insert_map(m_name);
+	//m_buffer = utils::convert_1_byte(group_num)+",0x00,0x00\t" + c_txt::get_str_from_map(m_name) + "\n";
+	m_buffer = utils::convert_1_byte(group_num) + ",0x00,0x00\t" + scrname + "\n";
 
 	vec_parm.clear();
 	vec_parm.push_back(m_scrid);
@@ -505,88 +506,98 @@ c_data_stream::c_data_stream()
 {
 }
 
-c_data_stream::c_data_stream(map<string, data_unit> x_map,string ecu_id,string ecu_veid)
+c_data_stream::c_data_stream(map<string, data_unit> x_map, string ecu_id, string ecu_veid)
 {
 
-		if (x_map["PARIDCONF"].data_value == "1")
-		{
-			load_state = ds_load_fail;
-			return;
-		}
-		m_ecu_id = ecu_id;
-		m_ecu_veid = ecu_veid;
-		m_scr_id = x_map["SCRID"].data_value;
-		m_par_id = x_map["PARID"].data_value;
-		m_name = x_map["PARLIBMP"].data_value;
-		m_par_name = x_map["PARNAME"].data_value;
-		m_par_disc = x_map["PARDISC"].data_value;
-		m_par_libuint = x_map["PARLIBUNIT"].data_value;
-		m_par_detail_string = x_map["PARAIDE"].data_value;
-		m_format_match = x_map["PARFORMATMATCH"].data_value;
-		m_format_repalce = x_map["PARFORMATREPLACE"].data_value;
-		m_ser_unid = get_ser_unid(m_par_name);
-		if (m_ser_unid=="")
-		{
-			load_state = ds_load_fail;
-			return;
-		}
-		m_request_id = get_req_id(m_ser_unid);
-		m_receive_id = get_rec_id(m_ser_unid);
-		m_request_cmd = get_request_cmd(m_request_id);
+	if (x_map["PARIDCONF"].data_value == "1")
+	{
+		load_state = ds_load_fail;
+		return;
+	}
+	m_ecu_id = ecu_id;
+	m_ecu_veid = ecu_veid;
+	m_scr_id = x_map["SCRID"].data_value;
+	m_par_id = x_map["PARID"].data_value;
+	m_name = x_map["PARLIBMP"].data_value;
+	m_par_name = x_map["PARNAME"].data_value;
+	m_par_disc = x_map["PARDISC"].data_value;
+	m_par_libuint = x_map["PARLIBUNIT"].data_value;
+	m_par_detail_string = x_map["PARAIDE"].data_value;
+	m_format_match = x_map["PARFORMATMATCH"].data_value;
+	m_format_repalce = x_map["PARFORMATREPLACE"].data_value;
+	m_format_type=x_map["PARFORMATTYPE"].data_value;
+	m_ser_unid = get_ser_unid(m_par_name);
+	if (m_ser_unid == "")
+	{
+		load_state = ds_load_fail;
+		return;
+	}
+	m_request_id = get_req_id(m_ser_unid);
+	m_receive_id = get_rec_id(m_ser_unid);
+	m_request_cmd = get_request_cmd(m_request_id);
 
-		vector<string> vec_parm;
-		vec_parm.push_back(m_receive_id);
-		vector<map<string, data_unit>> result = fire_bird::get_sql_result(st_data_stream_receive_info, vec_parm);
-		if (!result.size())
+	vector<string> vec_parm;
+	vec_parm.push_back(m_receive_id);
+	vector<map<string, data_unit>> result = fire_bird::get_sql_result(st_data_stream_receive_info, vec_parm);
+	if (!result.size())
+	{
+		c_log::print("c_data_stream::receive_id : %s no result\n", m_receive_id.c_str());
+		load_state = ds_load_fail;
+		return;
+	}
+	int flag = 1;
+	for (size_t i = 0;i < result.size();i++)
+	{
+		if (result[i]["PARSNAME"].data_value == m_par_name)
 		{
-			c_log::print("c_data_stream::receive_id : %s no result\n", m_receive_id.c_str());
-			load_state = ds_load_fail;
-			return;
-		}
-		int flag = 1;
-		for (size_t i = 0;i < result.size();i++)
-		{
-			if (result[i]["PARSNAME"].data_value == m_par_name)
+			m_rec_pos = result[i]["ISPBYTEPOS"].data_value;
+			m_rec_len = result[i]["ADDBYTELENGTH"].data_value;
+			m_rec_order = result[i]["ADDBYTEORDER"].data_value;
+			m_rec_bit_len = result[i]["ADDBITLENGTH"].data_value;
+			m_rec_bit_mask = result[i]["ADDBITMASK"].data_value;
+
+			m_line_conver_id = result[i]["PARID"].data_value;
+			if (m_rec_pos == "")
 			{
-				m_rec_pos = result[i]["ISPBYTEPOS"].data_value;
-				m_rec_len = result[i]["ADDBYTELENGTH"].data_value;
-				m_rec_order = result[i]["ADDBYTEORDER"].data_value;
-				m_line_conver_id = result[i]["PARID"].data_value;
-				if (m_rec_pos=="")
-				{
-					int cc = 0;
-				}
-				flag = 0;
-				break;
+				int cc = 0;
 			}
+			flag = 0;
+			break;
 		}
-		if (flag)
+	}
+	if (flag)
+	{
+		c_log::print("c_data_stream::receive_id :%s no actual parsname:%s\n", m_receive_id.c_str(), m_par_name.c_str());
+		load_state = ds_load_fail;
+		return;
+	}
+	//get type
+	m_type = get_type();
+	load_state = ds_load_success;
+}
+
+
+stream_type c_data_stream::get_type()
+{
+
+	if (m_format_type == "NUMERIC" && m_line_conver_id != "" && have_line_conver(m_line_conver_id))
+	{
+		return type_line_conver;
+	}
+	else
+	{
+		m_vec_tab_conver = get_vec_disc(m_scr_id, m_par_id);
+		if (m_vec_tab_conver.size())
 		{
-			c_log::print("c_data_stream::receive_id :%s no actual parsname:%s\n", m_receive_id.c_str(), m_par_name.c_str());
-			load_state = ds_load_fail;
-			return;
-		}
-		
-		
-		if (x_map["PARFORMATTYPE"].data_value == "CHAR")
-		{
-			m_type = type_format;
-			format_buffer = "\"" + c_du8::convert_du8_string(m_format_match) + "," + c_du8::convert_du8_string(m_format_repalce) + "\"";
+			return type_tab_conver;
 		}
 		else
 		{
-			if (x_map["PARFORMATTYPE"].data_value == "NUMERIC"&& m_line_conver_id !=""&&have_line_conver(m_line_conver_id))
-			{
-				m_type = type_line_conver;
-			}
-			else
-			{
-				m_type = type_tab_conver;
-				m_vec_tab_conver = get_vec_disc(m_scr_id, m_par_id);
-			}
+			return type_format;
 		}
-		load_state = ds_load_success;
+	}
 }
+
 
 
 vector<c_tab_conver> c_data_stream::get_vec_disc(string scr_id, string par_id)
@@ -709,10 +720,35 @@ string c_data_stream::get_xxx_buffer()
 	string tbuffer;
 	if (m_type == type_format)
 	{
-		c_format::insert(format_buffer);
-		tbuffer = c_format::get_string_from_map(format_buffer);
+		if (m_par_name.find("ID_REFERENCE_MATERIEL")!=-1|| m_par_name.find("ID_REFERENCE_COMPLEMENTAIRE_MATERIEL") != -1)
+		{
+			tbuffer= c_format::get_string_from_map("\"(.{2})(.{3})(.{3})(.{2}),$1 $2 $3 $4\"");
+		}
+		else if (m_par_name.find("ID_REFERENCE_LOGICIEL") != -1)
+		{
+			tbuffer = c_format::get_string_from_map("\"(.{3})(.{3}),96 $1 $2 80\"");
+		}
+		else if (m_par_name.find("ID_TRACABILITE_INDICE_EVOLUTION_EDITION") != -1)
+		{
+			tbuffer = c_format::get_string_from_map("\"(.{2})(.{2}),$1.$2\"");
+		}
+		else if (m_par_name.find("ID_MESS_DIAGNOSTIC") != -1)
+		{
+			tbuffer = c_format::get_string_from_map("\"(.{3})(.{3})(.{2}),96 $1 $2 $3\"");
+		}
+		else if (m_par_name.find("ID_DATE_TELECHARGEMENT")!=-1||
+			m_par_name.find("ID_TRACABILITE_DATE_FABRICATION") != -1||
+			m_par_name.find("ID_DATE_TELECH") != -1 || 
+			m_par_name.find("ID_DATE_2") != -1)
+		{
+			tbuffer = c_format::get_string_from_map("\"API_DATE_from_JJMMAA_UNM\"");
+		}
+		else
+		{
+			tbuffer = c_format::get_string_from_map("\"HEXA\"");
+		}
 	}
-	else if (m_type == type_tab_conver)
+	if (m_type == type_tab_conver)
 	{
 		string xx = get_tab_conver_buffer();
 		if (xx!="")
@@ -722,13 +758,16 @@ string c_data_stream::get_xxx_buffer()
 		}
 		else
 		{
-			c_format::insert("\"HEXA\"");
 			tbuffer = c_format::get_string_from_map("\"HEXA\"");
 		}
 	}
-	else if (m_type == type_line_conver)
+	if (m_type == type_line_conver)
 	{
 		tbuffer = string("0xFF,0x00,0x00,")+utils::convert_4_byte(stoi(m_line_conver_id));
+	}
+	if (tbuffer=="")
+	{
+		c_log::print("c_data_stream:: empty calc type buffer ,ecu_id :%s", m_ecu_id.c_str());
 	}
 	return tbuffer+"\t";
 }
@@ -736,9 +775,30 @@ string c_data_stream::get_xxx_buffer()
 string c_data_stream::get_tail_buffer()
 {
 	string rec_info = m_request_cmd + "\t"
-					+ utils::convert_1_byte(stoi(m_rec_pos)) + "\t"
-					+ utils::convert_1_byte(stoi(m_rec_len));
+		+ utils::convert_1_byte(stoi(m_rec_pos)) + "\t"
+		+ utils::convert_1_byte(stoi(m_rec_len)) + "\t";
+	if (m_rec_order=="NULL"||m_rec_order=="0")
+	{
+		rec_info += "0x00\t";
+	}
+	if(m_rec_order=="LittleEndian")
+	{
+		rec_info += "0x01\t";
+	}
+	if (m_rec_order=="BigEndian")
+	{
+		rec_info += "0x02\t";
+	}
+	rec_info += utils::convert_1_byte(stoi(m_rec_bit_len)) + "\t";
 
+	if (m_rec_bit_mask!="NULL")
+	{
+		rec_info += utils::convert_bit2_int(m_rec_bit_mask);
+	}
+	else
+	{
+		rec_info += "0x00,0x00";
+	}
 	return rec_info;
 }
 
@@ -775,6 +835,7 @@ string c_data_stream::get_tab_conver_buffer()
 		return string();
 	}
 }
+
 
 c_dtc::c_dtc()
 {
@@ -1060,10 +1121,10 @@ c_ecu_variant_group::c_ecu_variant_group(vector<string> vec_var_group_str,string
 	
 	for (size_t i = 0; i < vec_var_group_str.size(); i++)
 	{
-		//if (ecu_id!="1052")
-		//{
-		//	continue;
-		//}
+		if (ecu_id!="1041")
+		{
+			continue;
+		}
 		ecu_var = c_ecu_variant(vec_var_group_str[i], ecu_id, m_func_map, cur_veh);
 		if (!ecu_var.is_null)
 		{

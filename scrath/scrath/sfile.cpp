@@ -207,7 +207,6 @@ c_cel c_cel::move_next()
 	else if (m_str_name == "SubTree")
 	{
 		c_sub_tree_cel subtree_cel(*this);
-		//subtree_cel.m_tree.process_tree();
 		dest_cel = subtree_cel.move_next();
 	}
 	else if (m_str_name == "Act")
@@ -947,10 +946,6 @@ void c_tree::init_vec_node()
 			if (tbuf[1] != '!')
 			{
 				string tstring(tbuf);
-				if (line_cnt == 19)
-				{
-					int cc = 0;
-				}
 				c_node tnode(line_cnt++, tstring);
 				m_tree_info.m_vec_node.push_back(tnode);
 			}
@@ -977,7 +972,6 @@ void c_tree::init_vec_cel()
 		{
 			m_tree_info.m_vec_cel.push_back(tcel);
 		}
-
 	}
 }
 
@@ -1045,9 +1039,31 @@ void c_tree::run_script(vector<string>&vec_item,vector<string> vec_input_cohice,
 				next_cel = menu_screen_cel.move_next(t_pos);
 				pre_cel = next_cel;
 			}
-
 		}
 		else 
+		{
+			next_cel = pre_cel.move_next();
+			pre_cel = next_cel;
+		}
+	}
+}
+
+void c_tree::run_script(c_current_veh& current_veh)
+{
+	c_cel pre_cel = m_tree_info.m_vec_cel[0];
+	c_cel next_cel = pre_cel;
+	int input_cnt = 0;
+	while (next_cel.m_str_name != "End")
+	{
+		if (next_cel.m_str_name == "SubTree")
+		{
+			c_sub_tree_cel subtree_cel(pre_cel);
+		}
+		if (next_cel.m_str_name == "MenuScreen")
+		{
+			c_menu_screen_cel menu_screen_cel(pre_cel);
+		}
+		else
 		{
 			next_cel = pre_cel.move_next();
 			pre_cel = next_cel;

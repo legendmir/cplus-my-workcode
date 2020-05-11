@@ -288,7 +288,6 @@ class c_diag_screen :public c_cel{
 public:
 	c_diag_screen();
 	c_diag_screen(c_node tnode);
-
 	string m_scr_name;
 };
 
@@ -303,7 +302,7 @@ public:
 public:
 	void process_tree(vector<menu_info>& xx_result);
 	void quick_scan(vector<menu_info>& xx_result);
-	void get_vec_scrname(vector<string>&,c_cel& vec_cel);
+	void get_vec_scrname(vector<string>&);
 public:
 	bool is_only_one_menu();
 	bool is_script_file();

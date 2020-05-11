@@ -7,10 +7,8 @@ FILE* c_txt::fp_txt = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\en_txt
 map<string, string> c_format::m_map;
 FILE* c_format::fp_format = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\format.txt", "w");
 
-
 map<string, string> c_tab::m_map;
 FILE* c_tab::fp_tab_conver = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\tableConv.txt", "w");
-
 
 
 c_txt::c_txt()
@@ -39,23 +37,21 @@ string c_txt::get_str_from_map(string str)
 	return m_map[xx];
 }
 
-
 c_format::c_format()
 {
+
 }
 
-
-
-void c_format::insert(string str)
+void c_format::insert(string par_name)
 {
-	string write_buffer;
-	if (!m_map.count(str))
+	string buffer;
+	if (!m_map.count(par_name))
 	{
 		int num = m_map.size() + 1;
 		string num_str = string("0xFD,0x00,0x00,") + utils::convert_4_byte(num);
-		m_map[str] = num_str;
-		write_buffer = num_str + "\t" + str+"\n";
-		fwrite(write_buffer.c_str(), 1, write_buffer.size(), fp_format);
+		m_map[par_name] = num_str;
+		buffer = num_str + "\t" + par_name +"\n";
+		fwrite(buffer.c_str(), 1, buffer.size(), fp_format);
 	}
 }
 
@@ -131,7 +127,6 @@ c_tab_conver::c_tab_conver()
 {
 
 }
-
 
 void c_tab::insert(string key,string value)
 {
