@@ -1,0 +1,12 @@
+﻿  main.cpp
+G:\code\C++\cplus-my-workcode\compressor\compressor\main.cpp(227,34): warning C4101: “e”: 未引用的局部变量
+main.obj : error LNK2001: 无法解析的外部符号 "public: virtual unsigned int __thiscall baidu::zling::FileInputter::GetData(unsigned char *,unsigned int)" (?GetData@FileInputter@zling@baidu@@UAEIPAEI@Z)
+main.obj : error LNK2001: 无法解析的外部符号 "public: virtual bool __thiscall baidu::zling::FileInputter::IsEnd(void)" (?IsEnd@FileInputter@zling@baidu@@UAE_NXZ)
+main.obj : error LNK2001: 无法解析的外部符号 "public: virtual bool __thiscall baidu::zling::FileInputter::IsErr(void)" (?IsErr@FileInputter@zling@baidu@@UAE_NXZ)
+main.obj : error LNK2019: 无法解析的外部符号 "public: unsigned int __thiscall baidu::zling::FileInputter::GetInputSize(void)" (?GetInputSize@FileInputter@zling@baidu@@QAEIXZ)，该符号在函数 "public: virtual void __thiscall DemoActionHandler::OnDone(void)" (?OnDone@DemoActionHandler@@UAEXXZ) 中被引用
+main.obj : error LNK2001: 无法解析的外部符号 "public: virtual unsigned int __thiscall baidu::zling::FileOutputter::PutData(unsigned char *,unsigned int)" (?PutData@FileOutputter@zling@baidu@@UAEIPAEI@Z)
+main.obj : error LNK2001: 无法解析的外部符号 "public: virtual bool __thiscall baidu::zling::FileOutputter::IsErr(void)" (?IsErr@FileOutputter@zling@baidu@@UAE_NXZ)
+main.obj : error LNK2019: 无法解析的外部符号 "public: unsigned int __thiscall baidu::zling::FileOutputter::GetOutputSize(void)" (?GetOutputSize@FileOutputter@zling@baidu@@QAEIXZ)，该符号在函数 "public: virtual void __thiscall DemoActionHandler::OnDone(void)" (?OnDone@DemoActionHandler@@UAEXXZ) 中被引用
+main.obj : error LNK2019: 无法解析的外部符号 "int __cdecl baidu::zling::Encode(struct baidu::zling::Inputter *,struct baidu::zling::Outputter *,struct baidu::zling::ActionHandler *,int)" (?Encode@zling@baidu@@YAHPAUInputter@12@PAUOutputter@12@PAUActionHandler@12@H@Z)，该符号在函数 _main 中被引用
+main.obj : error LNK2019: 无法解析的外部符号 "int __cdecl baidu::zling::Decode(struct baidu::zling::Inputter *,struct baidu::zling::Outputter *,struct baidu::zling::ActionHandler *)" (?Decode@zling@baidu@@YAHPAUInputter@12@PAUOutputter@12@PAUActionHandler@12@@Z)，该符号在函数 _main 中被引用
+G:\code\C++\cplus-my-workcode\compressor\Debug\compressor.exe : fatal error LNK1120: 9 个无法解析的外部命令

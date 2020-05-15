@@ -152,7 +152,6 @@ string utils::get_descript(string xx)
 
 protocol_type utils::get_protocol(string famcanbus)
 {
-
 	if (famcanbus == "LIGNE_K")
 	{
 		return LIGNE_K;
@@ -190,7 +189,6 @@ protocol_type utils::get_protocol(string famcanbus)
 	{
 		return LIN_BSM;
 	}
-
 }
 
 
@@ -211,7 +209,6 @@ string utils::get_menu_file_name(string file_path)
 		{
 			if (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0)
 				continue;
-
 			// 在目录后面加上"\\"和搜索到的目录名进行下一次搜索
 		}
 		else
@@ -228,30 +225,24 @@ string utils::get_menu_file_name(string file_path)
 			}
 		}
 	} while (_findnext(handle, &findData) == 0);
-
 	_findclose(handle);    // 关闭搜索句柄
-
 	return string();
 }
 
 string utils::get_variant_file_name(string file_path)
 {
 	string path = c_path::source_path + "\\" + file_path + "\\*.*";
-
 	intptr_t handle;
 	_finddata_t findData;
-
 	handle = _findfirst(path.c_str(), &findData);
 	if (handle == -1)        // 检查是否成功
 		return string();
-
 	do
 	{
 		if (findData.attrib & _A_SUBDIR)
 		{
 			if (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0)
 				continue;
-
 			// 在目录后面加上"\\"和搜索到的目录名进行下一次搜索
 		}
 		else
@@ -285,13 +276,17 @@ file_type utils::get_func_file_type(string file_name)
 	{
 		return ft_defauts;
 	}
-	else if (file_name.find("REPA") != -1)
+	//else if (file_name.find("REPA") != -1)
+	//{
+	//	return ft_repa;
+	//}
+	else if (file_name.find("ACTIONNEURS") != -1)
 	{
-		return ft_repa;
+		return ft_action;
 	}
 	else
 	{
-		return ft_action;
+		return ft_else;
 	}
 }
 
@@ -310,4 +305,68 @@ string utils::convert_bit2_int(string bit_str)
 		}
 	}
 	return utils::convert_2_byte(result);
+}
+
+bool utils::is_script_file(string& file_name)
+{
+	if (file_name.substr(0, 12) == "script_reco_")
+		return true;
+	return false;
+}
+
+
+vector<string> utils::get_basic_vec_files(string file_path)
+{
+	vector<string> result;
+	string path = c_path::source_path + "\\" + file_path + "\\*.*";
+	intptr_t handle;
+	_finddata_t findData;
+	handle = _findfirst(path.c_str(), &findData);
+	if (handle == -1)        // 检查是否成功
+		return result;
+	do
+	{
+		if (findData.attrib & _A_SUBDIR)
+		{
+			if (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0)
+				continue;
+			// 在目录后面加上"\\"和搜索到的目录名进行下一次搜索
+		}
+		else
+		{
+			if (get_func_file_type(string(findData.name))!=ft_else)
+			{
+				result.push_back(string(findData.name));
+			}
+
+		}
+	} while (_findnext(handle, &findData) == 0);
+	_findclose(handle);    // 关闭搜索句柄
+	return result;
+}
+
+vector<string> utils::get_all_vec_files(string file_path)
+{
+	vector<string> result;
+	string path = c_path::source_path + "\\" + file_path + "\\*.*";
+	intptr_t handle;
+	_finddata_t findData;
+	handle = _findfirst(path.c_str(), &findData);
+	if (handle == -1)        // 检查是否成功
+		return result;
+	do
+	{
+		if (findData.attrib & _A_SUBDIR)
+		{
+			if (strcmp(findData.name, ".") == 0 || strcmp(findData.name, "..") == 0)
+				continue;
+			// 在目录后面加上"\\"和搜索到的目录名进行下一次搜索
+		}
+		else
+		{
+			result.push_back(string(findData.name));
+		}
+	} while (_findnext(handle, &findData) == 0);
+	_findclose(handle);    // 关闭搜索句柄
+	return result;
 }

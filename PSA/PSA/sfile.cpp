@@ -1099,6 +1099,31 @@ void c_tree::get_vec_scrname(vector<string>&vec_scr_name)
 	return;
 }
 
+vector<string> c_tree::get_vec_service()
+{
+	vector<string>result;
+	string xx;
+	string xxx;
+	for (size_t i = 0; i < m_tree_info.m_vec_node.size(); i++)
+	{
+		if (m_tree_info.m_vec_node[i].m_str_name == "ASCIIString" &&
+			m_tree_info.m_vec_node[i].m_map_attr["value"].substr(0, 1) == "$")
+		{
+			xx = m_tree_info.m_vec_node[i].m_map_attr["value"];
+			for (size_t j = 0; j < xx.size(); j++)
+			{
+				if (xx[j]!='\0')
+				{
+					xxx += xx[j];
+				}
+			}
+			result.push_back(xxx);
+			xxx = "";
+		}
+	}
+	return result;
+}
+
 bool c_tree::is_only_one_menu()
 {
 	unsigned int i = 0;
@@ -1114,19 +1139,6 @@ bool c_tree::is_only_one_menu()
 	{
 		return true;
 	}
-	return false;
-}
-
-bool c_tree::is_script_file()
-{
-	unsigned int i = 0;
-	string xxx;
-	for (i = 0;i < 12;i++)
-	{
-		xxx.push_back(m_file_name[i]);
-	}
-	if (xxx == "script_reco_")
-		return true;
 	return false;
 }
 

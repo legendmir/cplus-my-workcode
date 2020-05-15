@@ -2,6 +2,7 @@
 #include<map>
 #include<string>
 #include<vector>
+#include<windows.h>
 using namespace std;
 struct sql_info
 {
@@ -41,12 +42,17 @@ enum sql_type {
 	st_dtc_scrid,
 	st_dtc_lib,
 	st_dtc_newlib,
+	st_script_cmd_serid,
+	st_script_cmd_serunid,
+	st_script_cmd_serunfrid,
+	st_script_cmd_rec_cmd,
 };
 
 class c_sql {
 public:
 	c_sql();
 	string replace_parm(string& ori_val,vector<string>& vec_val);
+	string sql_sprintf(const char* format, ...);
 	map<sql_type, sql_info> sql_map;
 };
 

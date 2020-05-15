@@ -5,8 +5,12 @@
 #include"basic_data.h"
 #include"global_txt.h"
 #include"log.h"
+#include <io.h>
+
+using namespace std;
 
 extern map<string, string> g_map_textbuffer;
+
 
 int main()
 {
@@ -56,8 +60,11 @@ int main()
 
 
 	c_veh xx= c_veh("T73_Chine", "116");
+	xx.print_sfile_cmd();
 	xx.print_ecus_txt();
 	xx.print_quality_txt();
+
+
 
 	//c_veh xx = c_veh("P87", "139");
 	//xx.print_ecus_txt();

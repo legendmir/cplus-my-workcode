@@ -19,9 +19,6 @@ public:
 };
 
 
-
-
-
 class c_dtc
 {
 public:
@@ -48,7 +45,6 @@ private:
 	vector<string> m_vec_scrname;
 	vector<string> m_vec_scrid;
 };
-
 
 
 enum ds_load_result {
@@ -138,6 +134,7 @@ class c_ecu_variant {
 public:
 	c_ecu_variant();
 	c_ecu_variant(string str_var, string ecu_id, map<string, string>& m_func_map,c_current_veh& cur_ceh);
+	string get_veid();
 
 private:
 	vector<menu_info> get_func_file(c_current_veh& cur_ceh);
@@ -147,9 +144,9 @@ public:
 	int is_null;
 	string m_buffer;
 	static c_dtc m_dtc;
+	string m_name;
 
 private:
-	string m_name;
 	string m_id; 
 	string m_variant_name;
 	string m_ecu_id;
@@ -170,6 +167,15 @@ private:
 	string m_standard_name;
 };
 
+class c_service_parm
+{
+public:
+	c_service_parm(string& str);
+	
+public:
+	map<string, string> m_map_parm;
+	string m_req_cmd;
+};
 
 class c_ecu_variant_group
 {
@@ -177,11 +183,16 @@ public:
 	c_ecu_variant_group(vector<string> vec_var_group_str, string ecu_id,c_current_veh& cur_veh);
 
 public:
-	void print();
+	void print_func_file();
+	void print_script_cmd();
+	vector<string> get_service_string();
+
 
 private:
 	vector<string> m_vec_var_str;
 public:
+	string m_file_path;
+	string m_ecu_id;
 	map<string, string> m_func_map;
 	vector<c_ecu_variant>m_vec_variant;
 };
@@ -223,6 +234,7 @@ public:
 public:
 	void print_ecus_txt();
 	void print_quality_txt();
+	void print_sfile_cmd();
 
 public:
 	vector<c_ecu> m_vec_ecu;

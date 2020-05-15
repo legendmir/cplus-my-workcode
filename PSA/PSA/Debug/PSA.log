@@ -1,7 +1,13 @@
-﻿  sfile.cpp
-G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(15,15): warning C4018: “<”: 有符号/无符号不匹配
-G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(473,17): warning C4018: “>”: 有符号/无符号不匹配
-G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(488,17): warning C4018: “>”: 有符号/无符号不匹配
-G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(969,52): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
-G:\code\C++\cplus-my-workcode\PSA\PSA\sfile.cpp(1074,20): warning C4018: “<”: 有符号/无符号不匹配
+﻿  du8.cpp
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(33,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(42,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(51,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(60,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(69,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(78,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(87,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(96,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(105,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(114,25): warning C4018: “<”: 有符号/无符号不匹配
+G:\code\C++\cplus-my-workcode\PSA\PSA\du8.cpp(123,25): warning C4018: “<”: 有符号/无符号不匹配
   PSA.vcxproj -> G:\code\C++\cplus-my-workcode\PSA\Debug\PSA.exe

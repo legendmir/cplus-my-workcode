@@ -10,6 +10,9 @@ FILE* c_format::fp_format = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\
 map<string, string> c_tab::m_map;
 FILE* c_tab::fp_tab_conver = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\tableConv.txt", "w");
 
+map<string, string> c_sfile_cmd::m_map;
+FILE* c_sfile_cmd::fp_sfile_cmd = fopen("C:\\Users\\Administrator\\Desktop\\PSA_data\\sfile_cmd.txt", "w");
+
 
 c_txt::c_txt()
 {
@@ -20,6 +23,11 @@ void c_txt::insert_map(string key_str)
 	string repared_str;
 
 	repared_str = c_du8::convert_du8_string(key_str);
+	const char* pp = key_str.c_str();
+	if (repared_str =="")
+	{
+		printf("%s\n", pp);
+	}
 	string buffer;
 	if (!m_map.count(repared_str))
 	{
@@ -130,12 +138,28 @@ c_tab_conver::c_tab_conver()
 
 void c_tab::insert(string key,string value)
 {
-	string write_buffer;
+	string tbuffer;
 	if (!m_map.count(key))
 	{
 		m_map[key] = value;
-		write_buffer = key + "\t" + value + "\n";
-		fwrite(write_buffer.c_str(), 1, write_buffer.size(), fp_tab_conver);
+		tbuffer = key + "\t" + value + "\n";
+		fwrite(tbuffer.c_str(), 1, tbuffer.size(), fp_tab_conver);
 	}
 }
 
+c_sfile_cmd::c_sfile_cmd()
+{
+}
+
+void c_sfile_cmd::insert(string str)
+{
+	string buffer;
+	if (!m_map.count(str))
+	{
+		int num = m_map.size() + 1;
+		string num_str = utils::convert_4_byte(num);
+		m_map[str] = num_str;
+		buffer = num_str + "\t\"" + str + "\"\n";
+		fwrite(buffer.c_str(), 1, buffer.size(), fp_sfile_cmd);
+	}
+}

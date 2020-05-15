@@ -28,4 +28,5 @@ public:
 namespace fire_bird
 {
 	vector<map<string, data_unit>>get_sql_result(sql_type st_sql, vector<string> vec_str);
+	vector<map<string, data_unit>>get_sql_result(string& db_name, const char* format, ...);
 }

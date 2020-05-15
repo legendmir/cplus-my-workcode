@@ -589,7 +589,6 @@ c_act_cel::c_act_cel(c_cel& tnode)//构造
 	m_str_name = tnode.m_str_name;
 	m_str_value = tnode.m_str_value;
 	m_vec_son = tnode.get_vec_son();
-
 	m_dest_pos = tnode.m_map_attr["destc"] + "_" + tnode.m_map_attr["destl"];
 }
 
@@ -629,8 +628,6 @@ c_DefaultSwitchTarget::c_DefaultSwitchTarget(c_node& tnode)//默认switch目标
 	m_str_name = tnode.m_str_name;
 	m_str_value = tnode.m_str_value;
 	m_vec_son = tnode.get_vec_son();
-
-
 	m_default_pos = m_vec_son[0].m_map_attr["destc"] + "_" + m_vec_son[0].m_map_attr["destl"];
 }
 

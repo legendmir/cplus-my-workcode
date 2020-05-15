@@ -139,6 +139,22 @@ c_sql::c_sql()
 	xx.name = "GPC";
 	xx.sql = "SELECT dtc.DTCCODE, dtc.DTCNAME, dtc.DTCLABEL, dtc.DTCDESCRIPTION, dtc.DTCHELP, pro.PRONAME, pro.PRODSDNAME, pro.PROTYPE, pro.PROLABEL, pro.PROALLDTC, proval.PROVALTYPE, proval.PROVALNAME, proval.PROVALLABEL FROM ECU ecu INNER JOIN  (I_ECUGRPDTC iecugrpdtc INNER JOIN  (I_ECUDTC iecudtc INNER JOIN  (DTC dtc INNER JOIN  (I_DTCPRO idtcpro INNER JOIN  (DTCPROPERTY pro INNER JOIN  (I_PROVAL iproval INNER JOIN  DTCPROPERTYVALUE proval  ON iproval.PROVALID = proval.PROVALID)  ON pro.PROID = iproval.PROID)  ON pro.PROID = idtcpro.PROID)  ON dtc.DTCID = idtcpro.DTCID)  ON dtc.DTCID = iecudtc.DTCID)  ON ecu.I_ECUGRPDTCID = iecugrpdtc.I_ECUGRPDTCID)  ON iecugrpdtc.I_ECUGRPDTCID = iecudtc.I_ECUGRPDTCID WHERE ecu.ECUID IN (x_x) UNION ALL SELECT dtc.DTCCODE, dtc.DTCNAME, dtc.DTCLABEL, dtc.DTCDESCRIPTION, dtc.DTCHELP, CAST (NULL AS VARCHAR(64)), CAST (NULL AS VARCHAR(32)), CAST (NULL AS VARCHAR(16)), CAST (NULL AS VARCHAR(255)), CAST (NULL AS SMALLINT), CAST (NULL AS VARCHAR(32)), CAST (NULL AS VARCHAR(64)), CAST (NULL AS VARCHAR(255)) FROM ECU ecu INNER JOIN  (I_ECUGRPDTC iecugrpdtc INNER JOIN  (I_ECUDTC iecudtc INNER JOIN  DTC dtc  ON dtc.DTCID = iecudtc.DTCID)  ON ecu.I_ECUGRPDTCID = iecugrpdtc.I_ECUGRPDTCID)  ON iecugrpdtc.I_ECUGRPDTCID = iecudtc.I_ECUGRPDTCID WHERE ecu.ECUID IN (x_x)   AND NOT EXISTS (SELECT 1 FROM I_DTCPRO idtcpro WHERE idtcpro.DTCID = dtc.DTCID)  ";
 	sql_map[st_dtc_newlib] = xx;
+
+	xx.name = "DSD";
+	xx.sql = "SELECT s.SERID, s.SERDESCRIPTION, s.SERLNAME FROM SERVICE s inner join I_ECUSER i on s.serid = i.serid where i.ECUVEID =x_x and SERSNAME='x_x' ";
+	sql_map[st_script_cmd_serid] = xx;
+
+	xx.name = "DSD";
+	xx.sql = "SELECT s.SERID, s.SERSNAME, s.SERLNAME, s.SERDESCRIPTION, su.SERUNID, su.SERUNTYPE, su.SERUNDESCRIPTION, su.SERUNRECEIVECYCLES, su.SERUNSENDCYCLES, su.SERUNTIMECYCLES, sf.SERUNFRID, sf.SERUNFRTYID, sf.SERUNFRDESCRIPTION, isp.I_SERPARID, isp.PARID, isp.ISPBYTEPOS, isp.ISPVALUE, isp.ISPNUMBER, isp.BLOID FROM SERVICE s INNER JOIN SERVUNIT su on s.SERID = su.SERID INNER JOIN SERVUNITFRAME sf on su.SERUNID = sf.SERUNID INNER JOIN I_SERPAR isp on sf.SERUNFRID = isp.SERUNFRID WHERE s.SERID=%s and isp.ISPBYTEPOS=2 and sf.serunfrtyid=0 and (su.SERUNSNAME='%s') and ((isp.PARID is not null) OR (isp.CRCID is not null) OR (isp.MAPID is not null)) ";
+	sql_map[st_script_cmd_serunid] = xx;
+
+	xx.name = "DSD";
+	xx.sql = "SELECT distinct sf.SERUNFRTYID, su.SERUNID , sf.SERUNFRDESCRIPTION, sf.SERUNFRID FROM SERVUNIT su inner join SERVUNITFRAME sf on su.SERUNID = sf.SERUNID where su.SERUNID = x_x ";
+	sql_map[st_script_cmd_serunfrid] = xx;
+
+	xx.name = "DSD";
+	xx.sql = "SELECT isp.SERUNFRID, isp.PARID, isp.ISPBYTEPOS, isp.ISPVALUE, isp.BLOID, pt.PARTYNAME, pt.PARTYID, p.PARSNAME, p.PARLNAME, p.PARDESCRIPTION, p.PARENCODING, p.PARTYPE, p.PARBASEENCODING, p.PARINTERNALENCODING, p.PARPHYSICALENCODING, p.PARCOMPUTMETHOD, dt.DATTYID, dt.DATTYNAME, ad.ADDABSOLUTENUMBER, ad.ADDBYTELENGTH, ad.ADDBYTEORDER, ad.ADDBITLENGTH, ad.ADDBITMASK, ad.ADDBITCONDENSED, ad.ADDMAXLENGTH, ad.ADDMINLENGTH, ad.ADDTERMINATION, ad.ADDBITPARAMREF, adt.ADDTYNAME, adt.ADDTYID, c.CRCSNAME, c.CRCLNAME, c.CRCDESCRIPTION, c.CRCFIRSTBYTE, c.CRCLASTBYTE, c.CRCPOLYNOM, c.CRCBYTELENGTH, c.CRCBLOCKNAME, bl.BLOSNAME, bl.BLODESCRIPTION, bl.BLOBYTEPOS, bl.BLOMINOCCURS, bl.BLOMAXOCCURS, bl.BLOBYTELENGTH, bl.ENDOFPDU, mp.MAPSNAME, mp.MAPLNAME, mp.MAPDESCRIPTION, mp.MAPLID, mp.MAPID, db.DYNSNAME, db.DYNBYTEPOS, db.DYNID, db.DYNBYTELENGTH FROM PARTYPE pt INNER JOIN I_SERPAR isp ON isp.PARTYID = pt.PARTYID LEFT OUTER JOIN (PARAM p  INNER JOIN DATATYPE dt ON p.DATTYID = dt.DATTYID) ON isp.PARID = p.PARID LEFT OUTER JOIN ADDDATA ad ON isp.PARID = ad.PARID LEFT OUTER JOIN ADDTYPE adt ON ad.ADDTYID = adt.ADDTYID LEFT OUTER JOIN BLOCK bl ON isp.BLOID = bl.BLOID LEFT OUTER JOIN DYNAMICBLOCK db ON isp.DYNID = db.DYNID LEFT OUTER JOIN CRC c ON isp.CRCID = c.CRCID LEFT OUTER JOIN MAPPED mp ON isp.MAPID = mp.MAPID WHERE (isp.SERUNFRID = x_x) and ((isp.PARID is not null) OR (isp.CRCID is not null) OR (isp.MAPID is not null)) ";
+	sql_map[st_script_cmd_rec_cmd] = xx;
 }
 string c_sql::replace_parm(string& ori_val, vector<string>& vec_val)
 {
@@ -153,4 +169,14 @@ string c_sql::replace_parm(string& ori_val, vector<string>& vec_val)
 		}
 	}
 	return   ori_val;
+}
+
+string c_sql::sql_sprintf(const char* format, ...)
+{
+	va_list _va_list;
+	va_start(_va_list, format);
+	char szBuf[800]{};
+	vsprintf(szBuf, format, _va_list);
+	va_end(_va_list);
+	return string(szBuf);
 }

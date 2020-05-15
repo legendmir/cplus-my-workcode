@@ -9,6 +9,18 @@
 using namespace std;
 
 
+
+class c_sfile_cmd
+{
+public:
+	c_sfile_cmd();
+public:
+	static void insert(string str);
+	static map<string, string>m_map;
+	static FILE* fp_sfile_cmd;
+};
+
+
 class c_tab
 {
 public:

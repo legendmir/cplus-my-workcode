@@ -128,4 +128,16 @@ namespace fire_bird
 		c_fire_bird veh_result(xx.name, handled_sql);
 		return veh_result.get_result_tab();
 	}
+
+	vector<map<string, data_unit>> fire_bird::get_sql_result(string& db_name,const char* format, ...)
+	{
+		va_list _va_list;
+		va_start(_va_list, format);
+		char szBuf[800]{};
+		vsprintf(szBuf, format, _va_list);
+		va_end(_va_list);
+		string handled_sql = szBuf;
+		c_fire_bird veh_result(db_name, handled_sql);
+		return veh_result.get_result_tab();
+	}
 }

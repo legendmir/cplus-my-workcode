@@ -119,7 +119,7 @@ class c_test_cel :public c_cel {
 public:;
 	  c_test_cel();
 	  c_test_cel(c_cel& tcel);
-	   c_cel move_next();
+	  c_cel move_next();
 public:
 	string m_dest_yes;
 	string m_dest_no;

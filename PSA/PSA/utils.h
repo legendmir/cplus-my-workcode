@@ -1,6 +1,7 @@
 #pragma once
 #include<string>
 #include<vector>
+#include<map>
 #include<io.h>
 #include"path.h"
 using namespace std;
@@ -23,6 +24,7 @@ enum file_type{
 	ft_defauts,
 	ft_action,
 	ft_repa,
+	ft_else,
 };
 
 class utils {
@@ -42,5 +44,7 @@ public:
 	static string get_variant_file_name(string file_path);
 	static file_type get_func_file_type(string file_name);
 	static string convert_bit2_int(string bit_str);
-
+	static bool is_script_file(string& file_name);
+	static vector<string> get_basic_vec_files(string file_path);
+	static vector<string> get_all_vec_files(string file_path);
 };

@@ -8,6 +8,7 @@ public:
 	string m_comtype;
 	string m_moudle_name;
 	string m_ecu_type;
+	string m_veid;
 	string m_ecu_descript;
 	string m_file_name;
 	string m_file_path;

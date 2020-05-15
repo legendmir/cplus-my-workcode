@@ -80,7 +80,7 @@ c_veh::c_veh(string mod_name,string mod_id, string reserch_type)
 		{
 			continue;
 		}
-		//if (result[i]["FAMILYNAME"].data_value != "ABS")
+		//if (result[i]["FAMILYNAME"].data_value != "PORTEC")
 		//{
 		//	continue;
 		//}
@@ -160,7 +160,7 @@ void c_veh::print_quality_txt()
 		for (size_t j = 0; j < m_vec_ecu[i].m_vec_variant_group.size(); j++)
 		{
 			group_num = utils::convert_1_byte(j + 1);
-			m_vec_ecu[i].m_vec_variant_group[j].print();
+			m_vec_ecu[i].m_vec_variant_group[j].print_func_file();
 			for (size_t k = 0; k < m_vec_ecu[i].m_vec_variant_group[j].m_vec_variant.size(); k++)
 			{
 				var_num = utils::convert_1_byte(k + 1);
@@ -170,6 +170,18 @@ void c_veh::print_quality_txt()
 		}
 	}
 	fclose(fp);
+}
+
+void c_veh::print_sfile_cmd()
+{
+
+	for (size_t i = 0; i < m_vec_ecu.size(); i++)
+	{
+		for (size_t j = 0; j < m_vec_ecu[i].m_vec_variant_group.size(); j++)
+		{
+			m_vec_ecu[i].m_vec_variant_group[j].print_script_cmd();
+		}
+	}
 }
 
 
@@ -197,7 +209,6 @@ c_ecu::c_ecu(string name, string label, string ve_id,c_current_veh& cur_veh)
 	m_famid_accept = result[0]["FAMIDCANE"].data_value;
 	m_protocal_type = utils::get_protocol(result[0]["FAMCANBUS"].data_value);
 	m_buffer = get_buffer();
-
 
 	vec_parm.clear();
 	vec_parm.push_back(m_fam_id);
@@ -295,9 +306,13 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 	}
 	m_variant_descript = utils::get_descript(result[0]["RECDESCRIPT"].data_value);
 	cur_veh.m_ecu_descript = m_variant_descript;
+	cur_veh.m_veid = m_veid;
+
+	
+	//return;//不加载数据
 
 
-	m_buffer = "\"" + cur_veh.m_moudle_name+","+ m_name + ","+m_ecu_id+","+ m_variant_name +"," + m_variant_descript +","+ m_re_coframe + "," + m_cmd1 + "," + m_cmd2 + "," + m_IDEMNEMOVALUE + "," + m_pos + "," + m_length + ",";
+	
 	get_global_buffer(cur_veh);//获取全局的global buffer 到veh.map
 	vector<menu_info>menu_func_result = get_func_file(cur_veh);
 	string new_file_name;
@@ -354,18 +369,23 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 			}
 		}
 	}
-	
-	m_buffer += m_ident_name + "," + m_standard_name + "," + m_dtc.m_file_name + ",";
-	
-	
+	m_buffer = "\"" + cur_veh.m_comtype + "," + cur_veh.m_moudle_name + "," + m_name + "," + m_ecu_id + ","
+		+ m_veid + "," + m_variant_name + "," + m_variant_descript + "," + m_re_coframe + "," + m_cmd1 + ","
+		+ m_cmd2 + "," + m_IDEMNEMOVALUE + "," + m_pos + "," + m_length + "," + m_dtc.m_file_name + ",";
 	if (m_dtc.m_quality_buffer=="")
 	{
-		m_buffer = m_buffer + ",,\"";
+		m_buffer = m_buffer + ",,";
 	}
 	else
 	{
-		m_buffer = m_buffer + m_dtc.m_quality_buffer + "\"";
+		m_buffer = m_buffer + m_dtc.m_quality_buffer + ",";
 	}
+	m_buffer += cur_veh.m_file_name + "\"";
+}
+
+string c_ecu_variant::get_veid()
+{
+	return m_veid;
 }
 
 
@@ -479,7 +499,7 @@ c_data_stream_group::c_data_stream_group(int group_num, string ecu_id,string ecu
 	
 	//c_txt::insert_map(m_name);
 	//m_buffer = utils::convert_1_byte(group_num)+",0x00,0x00\t" + c_txt::get_str_from_map(m_name) + "\n";
-	m_buffer = utils::convert_1_byte(group_num) + ",0x00,0x00\t" + scrname + "\n";
+	m_buffer = utils::convert_1_byte(group_num) + ",0x00,0x00\t\"" + scrname + "\"\n";
 
 	vec_parm.clear();
 	vec_parm.push_back(m_scrid);
@@ -508,7 +528,6 @@ c_data_stream::c_data_stream()
 
 c_data_stream::c_data_stream(map<string, data_unit> x_map, string ecu_id, string ecu_veid)
 {
-
 	if (x_map["PARIDCONF"].data_value == "1")
 	{
 		load_state = ds_load_fail;
@@ -555,12 +574,7 @@ c_data_stream::c_data_stream(map<string, data_unit> x_map, string ecu_id, string
 			m_rec_order = result[i]["ADDBYTEORDER"].data_value;
 			m_rec_bit_len = result[i]["ADDBITLENGTH"].data_value;
 			m_rec_bit_mask = result[i]["ADDBITMASK"].data_value;
-
 			m_line_conver_id = result[i]["PARID"].data_value;
-			if (m_rec_pos == "")
-			{
-				int cc = 0;
-			}
 			flag = 0;
 			break;
 		}
@@ -579,7 +593,6 @@ c_data_stream::c_data_stream(map<string, data_unit> x_map, string ecu_id, string
 
 stream_type c_data_stream::get_type()
 {
-
 	if (m_format_type == "NUMERIC" && m_line_conver_id != "" && have_line_conver(m_line_conver_id))
 	{
 		return type_line_conver;
@@ -1119,12 +1132,22 @@ c_ecu_variant_group::c_ecu_variant_group(vector<string> vec_var_group_str,string
 	string str_variant;
 	c_ecu_variant ecu_var;
 	
+	m_ecu_id = ecu_id;
+	if (utils::is_script_file(cur_veh.m_file_name))
+	{
+		m_file_path = cur_veh.m_file_path + "\\" + cur_veh.m_ecu_type;
+	}
+	else
+	{
+		m_file_path = cur_veh.m_file_path;
+	}
+	
 	for (size_t i = 0; i < vec_var_group_str.size(); i++)
 	{
-		if (ecu_id!="1041")
-		{
-			continue;
-		}
+		//if (ecu_id!="1041")
+		//{
+		//	continue;
+		//}
 		ecu_var = c_ecu_variant(vec_var_group_str[i], ecu_id, m_func_map, cur_veh);
 		if (!ecu_var.is_null)
 		{
@@ -1133,7 +1156,7 @@ c_ecu_variant_group::c_ecu_variant_group(vector<string> vec_var_group_str,string
 	}
 }
 
-void c_ecu_variant_group::print()
+void c_ecu_variant_group::print_func_file()
 {
 	string file_path;
 	FILE* fp;
@@ -1146,4 +1169,119 @@ void c_ecu_variant_group::print()
 	}
 }
 
+void c_ecu_variant_group::print_script_cmd()
+{
+	vector<string> vec_service_string = get_service_string();
+	string buffer2write;
+	vector<string> vec_parm;
+	vector<map<string, data_unit>> result;
+	string ser_name;
+	string ser_unint;
 
+	for (size_t j = 0; j < m_vec_variant.size(); j++)
+	{
+		for (size_t i = 0; i < vec_service_string.size(); i++)
+		{
+			c_service_parm service_parm(vec_service_string[i]);
+			if (service_parm.m_map_parm.count("SERVICE") &&
+				service_parm.m_map_parm.count("SERVICEUNIT") &&
+				service_parm.m_map_parm.size() == 2)
+			{
+				ser_name = service_parm.m_map_parm["SERVICE"];
+				ser_unint = service_parm.m_map_parm["SERVICEUNIT"];
+
+				vec_parm.clear();
+				vec_parm.push_back(m_vec_variant[j].get_veid());
+				vec_parm.push_back(ser_name);
+				result = fire_bird::get_sql_result(st_script_cmd_serid, vec_parm);
+				if (!result.size())
+				{
+					c_log::print("c_ecu_variant_group::get serid failed, veid: %s , ser_name: %s\n", m_vec_variant[j].get_veid().c_str(), ser_name.c_str());
+					continue;
+				}
+				string serid = result[0]["SERID"].data_value;
+				result = fire_bird::get_sql_result(g_sqls.sql_map[st_script_cmd_serunid].name,g_sqls.sql_map[st_script_cmd_serunid].sql.c_str(), serid.c_str(), ser_unint.c_str());
+				if (!result.size())
+				{
+					c_log::print("c_ecu_variant_group::get serunid failed, veid: %s , ser_name: %s\n", m_vec_variant[j].get_veid().c_str(), ser_name.c_str());
+					continue;
+				}
+				string serunid = result[0]["SERUNID"].data_value;
+				vec_parm.clear();
+				vec_parm.push_back(serunid);
+				result = fire_bird::get_sql_result(st_script_cmd_serunfrid, vec_parm);
+				if (!result.size())
+				{
+					c_log::print("c_ecu_variant_group::get serunfrid failed, veid: %s , ser_name: %s\n", m_vec_variant[j].get_veid().c_str(), ser_name.c_str());
+					continue;
+				}
+				string serunfrid_req = result[0]["SERUNFRID"].data_value;
+				vec_parm.clear();
+				vec_parm.push_back(serunfrid_req);
+				result = fire_bird::get_sql_result(st_script_cmd_rec_cmd, vec_parm);
+				if (!result.size())
+				{
+					c_log::print("c_ecu_variant_group::get req_cmd failed, veid: %s , ser_name: %s\n", m_vec_variant[j].get_veid().c_str(), ser_name.c_str());
+					continue;
+				}
+				string req_cmd;
+				string temp;
+				for (size_t i = 0; i < result.size(); i++)
+				{
+					temp = result[i]["ISPVALUE"].data_value;
+					if (temp != "NULL" && temp != "0")
+					{
+						req_cmd += result[i]["ISPVALUE"].data_value;
+					}
+				}
+				buffer2write = m_vec_variant[j].get_veid() + "_" + vec_service_string[i] + "," + req_cmd;
+				c_sfile_cmd::insert(buffer2write);
+			}
+	/*		else
+			{
+				c_log::print("c_ecu_variant_group::print_script_cmd err>>%s\n", vec_service_string[i].c_str());
+			}*/
+		}
+	}
+}
+
+vector<string> c_ecu_variant_group::get_service_string()
+{
+	vector<string> vec_service_string;
+	vector<string> vec_tmp;
+	vector<string> vec_file_name = utils::get_basic_vec_files(m_file_path);
+	for (size_t i = 0; i < vec_file_name.size(); i++)
+	{
+		c_current_veh xx;
+		c_tree tmp_tree = c_tree(m_file_path, vec_file_name[i], xx);
+		vec_tmp = tmp_tree.get_vec_service();
+		for (size_t j = 0;  j < vec_tmp.size();  j++)
+		{
+			vec_service_string.push_back(vec_tmp[j]);
+		}
+		vec_tmp.clear();
+	}
+	return vec_service_string;
+}
+
+c_service_parm::c_service_parm(string& str)
+{
+	vector<string> tmp_vec = utils::split(str, '$');
+	vector<string> ser_vec;
+ 	for (size_t i = 1; i < tmp_vec.size(); i++)
+	{
+		ser_vec.push_back(tmp_vec[i]);
+	}
+	string key;
+	string value;
+	for (size_t i = 0; i < ser_vec.size()-1; i++)
+	{
+		key = ser_vec[i];
+		value = ser_vec[++i];
+		if (value[0]=='@')
+		{
+			value = c_du8::convert_du8_string(value);
+		}
+		m_map_parm[key] = value;
+	}
+}

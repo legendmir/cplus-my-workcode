@@ -303,9 +303,10 @@ public:
 	void process_tree(vector<menu_info>& xx_result);
 	void quick_scan(vector<menu_info>& xx_result);
 	void get_vec_scrname(vector<string>&);
+	vector<string> get_vec_service();
+	void decode_string();
 public:
 	bool is_only_one_menu();
-	bool is_script_file();
 public:
 	c_global_tree_info m_tree_info;
 	string m_full_path;
