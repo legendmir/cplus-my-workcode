@@ -113,6 +113,54 @@ private:
 };
 
 
+struct action_rec_info
+{
+	string rec_label;
+	string rec_var_cmd;
+	string rec_stat_name;
+};
+
+class c_action_sub
+{
+public:
+	c_action_sub();
+	c_action_sub(map<string, data_unit>&,string veid);
+
+	string m_buffer;
+private:
+	void get_buffer();
+	string m_TAMCTRLID;
+	string m_CTRLSTATUSPARNAME;
+	string m_SERVNAME;
+	string m_SUBSERVICE;
+	string m_SERVICE;
+	string m_ISERVPARVALUE;
+	string m_req_cmd;
+	string m_rec_cmd_pos;
+	string m_rec_cmd_len;
+	vector<action_rec_info>m_vec_rec_info;
+
+	
+};
+
+
+class c_action_test {
+public:
+	c_action_test();
+	c_action_test(int group_num, string& ecu_id, string& ecu_veid, string& scrname, string& file_name);
+
+	string m_buffer;
+private:
+	string m_SCNNAME;
+	string m_TITLE;
+	string m_TAMTYPE;
+	string m_MAINTEXT;
+	string m_SCRHELPTEXT;
+	string m_SCRTYPE;
+	vector<c_action_sub> m_vec_sub;
+};
+
+
 class c_data_stream_group
 {
 public:
@@ -162,9 +210,11 @@ private:
 
 	c_data_stream_group m_ident_group;
 	c_data_stream_group m_standard_group;
+	vector<c_action_test> m_vec_action_test;
 	
 	string m_ident_name;
 	string m_standard_name;
+	string m_action_name;
 };
 
 class c_service_parm

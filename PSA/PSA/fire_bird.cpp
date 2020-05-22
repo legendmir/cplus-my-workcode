@@ -133,7 +133,7 @@ namespace fire_bird
 	{
 		va_list _va_list;
 		va_start(_va_list, format);
-		char szBuf[800]{};
+		char szBuf[3000]{};
 		vsprintf(szBuf, format, _va_list);
 		va_end(_va_list);
 		string handled_sql = szBuf;

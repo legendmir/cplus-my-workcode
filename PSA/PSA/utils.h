@@ -33,6 +33,7 @@ public:
 	static string convert_4_byte(int num);
 	static string convert_2_byte(short num);
 	static string convert_2_byte(int num);
+	static string convert_2_byte(size_t num);
 	static string convert_1_byte(int num);
 	static string convert_3_byte(short x1, char x2);
 	static string convert_3_byte(int num);

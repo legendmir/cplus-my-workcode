@@ -27,7 +27,6 @@ int main()
 	//N6A|NSB|NFU|ME749|FLEXFUEL|REC
 	//N6A|NSB|NFU|ME749|FLEXFUEL|REC
 
-
 	//c_current_veh t_config;
 	//t_config.m_comtype = "T7";
 	//t_config.m_moudle_name = "T73_Chine";
@@ -47,7 +46,6 @@ int main()
 	//c_fire_bird* veh_result1 = new c_fire_bird(st_ecu_variant_one_line.name, handled_sql1);
 	//vector<map<string, data_unit>> one_line_result = veh_result1->get_result_tab();
 
-
 	//c_conver_tab ccc;
 	//ccc.print();
 
@@ -58,33 +56,30 @@ int main()
 	//string aa = "1111";
 	//int cc=utils::convert_bit2_int(aa);
 
-
 	c_veh xx= c_veh("T73_Chine", "116");
 	xx.print_sfile_cmd();
 	xx.print_ecus_txt();
 	xx.print_quality_txt();
 
+	//c_veh xx1 = c_veh("P87", "139");
+	//xx1.print_sfile_cmd();
+	//xx1.print_ecus_txt();
+	//xx1.print_quality_txt();
 
+	//c_veh xx2 = c_veh("P84Chine", "137");//4008
+	//xx2.print_sfile_cmd();
+	//xx2.print_ecus_txt();
+	//xx2.print_quality_txt();
 
-	//c_veh xx = c_veh("P87", "139");
-	//xx.print_ecus_txt();
-	//xx.print_quality_txt();
+	//c_veh xx3 = c_veh("3008C_", "133");
+	//xx3.print_sfile_cmd();
+	//xx3.print_ecus_txt();
+	//xx3.print_quality_txt();
 
-
-	//c_veh xx = c_veh("P84Chine", "137");//4008
-	//xx.print_ecus_txt();
-	//xx.print_quality_txt();
-
-
-	//c_veh xx = c_veh("3008C_", "133");
-	//xx.print_ecus_txt();
-	//xx.print_quality_txt();
-
-
-	//c_veh xx = c_veh("A94", "130");
-	//xx.print_ecus_txt();
-	//xx.print_quality_txt();
-
+	//c_veh xx4 = c_veh("A94", "130");
+	//xx4.print_sfile_cmd();
+	//xx4.print_ecus_txt();
+	//xx4.print_quality_txt();
 
 	return 0;
 }

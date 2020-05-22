@@ -22,6 +22,7 @@ enum sql_type {
 	st_ecu_variant_list_all,
 	st_ecu_identification,//∞Ê±æ–≈œ¢
 	st_id_data_stream,
+
 	st_data_stream_serun_id,
 	st_data_stream_serunfr_id,
 	st_data_stream_request_info,
@@ -29,7 +30,9 @@ enum sql_type {
 	st_data_stream_state_disc,
 	st_data_stream_line_disc,
 	st_data_stream_algorithm,
+
 	st_gloabl_conver,
+
 	st_dtc_serid,
 	st_dtc_serunid,
 	st_dtc_serunfrid,
@@ -42,10 +45,24 @@ enum sql_type {
 	st_dtc_scrid,
 	st_dtc_lib,
 	st_dtc_newlib,
+
 	st_script_cmd_serid,
 	st_script_cmd_serunid,
 	st_script_cmd_serunfrid,
 	st_script_cmd_rec_cmd,
+
+
+	st_action_test_scnnane,
+	st_action_test_TAMCTRLID,
+	st_action_test_serid,
+	st_action_test_serunid,
+	st_action_test_serunfrid,
+	st_action_test_req_info,
+	st_action_test_req_stvalue,
+	st_action_test_rec_info,
+	st_action_test_rec_info1,
+	st_action_test_rec_stvalue,
+	st_action_test_TAMSTATUSDISCVALNAME
 };
 
 class c_sql {

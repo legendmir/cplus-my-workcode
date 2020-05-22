@@ -1367,5 +1367,13 @@ c_diag_screen::c_diag_screen()
 c_diag_screen::c_diag_screen(c_node tnode)
 {
 	m_vec_son = tnode.get_vec_son();
-	m_scr_name = m_vec_son[0].m_map_attr["ScreenName"];
+	if (m_vec_son[0].m_str_name=="ReadECUDataScr")
+	{
+		m_scr_name = m_vec_son[0].m_map_attr["ScreenName"];
+	}
+	if (m_vec_son[0].m_str_name == "ActuatorTestScr")
+	{
+		m_scr_name = m_vec_son[0].m_map_attr["Name"];
+	}
+	
 }

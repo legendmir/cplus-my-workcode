@@ -37,6 +37,16 @@ string utils::convert_2_byte(int num)
 	return buf;
 }
 
+string utils::convert_2_byte(size_t num)
+{
+	unsigned char high = num >> 8;
+	unsigned char low = num;
+
+	char buf[20]{};
+	sprintf(buf, "0x%02X,0x%02X", high, low);
+	string result = buf;
+	return buf;
+}
 
 string utils::convert_1_byte(int num)
 {
@@ -163,7 +173,6 @@ protocol_type utils::get_protocol(string famcanbus)
 	if (famcanbus == "CAN_CAR")
 	{
 		return CAN_CAR;
-
 	}
 	if (famcanbus == "CAN_CONF")
 	{

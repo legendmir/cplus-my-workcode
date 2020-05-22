@@ -49,7 +49,6 @@ c_veh::c_veh(string mod_name,string mod_id, string reserch_type)
 		m_comtype = result[0]["ARCNAME"].data_value;
 	}
 	
-
 	//cha veid
 	vec_parm.clear();
 	vec_parm.push_back(m_comtype);
@@ -311,10 +310,13 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 	
 	//return;//不加载数据
 
-
-	
 	get_global_buffer(cur_veh);//获取全局的global buffer 到veh.map
 	vector<menu_info>menu_func_result = get_func_file(cur_veh);
+	if (!menu_func_result.size())
+	{
+		is_null = 1;
+		return;
+	}
 	string new_file_name;
 	for (size_t i = 0; i < menu_func_result.size(); i++)
 	{
@@ -322,9 +324,45 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 		new_file_name = new_file_name.substr(0, new_file_name.size()-2);
 		int len = new_file_name.size();
 		file_type ft = utils::get_func_file_type(new_file_name);
-		if (ft == ft_ident)
+		//if (ft == ft_ident)
+		//{
+		//	new_file_name = m_ecu_id + "_" + new_file_name ;
+		//	if (!m_func_map.count(new_file_name))
+		//	{
+		//		vector<string> vec_scrname;
+		//		c_tree t_tree(menu_func_result[i].m_file_path, menu_func_result[i].m_file_name, cur_veh);
+		//		c_cel t_cel;
+		//		t_tree.get_vec_scrname(vec_scrname);
+		//		string all_buffer;
+		//		for (size_t i = 0; i < vec_scrname.size(); i++)
+		//		{
+		//			m_ident_group = c_data_stream_group(i+1,m_ecu_id,m_veid, vec_scrname[i], new_file_name);
+		//			all_buffer += m_ident_group.m_buffer;
+		//		}
+		//		m_func_map[new_file_name] = all_buffer;
+		//	}
+		//	m_ident_name = new_file_name;
+		//}
+		//if (ft == ft_standard)
+		//{
+		//	if (!m_func_map.count(new_file_name))
+		//	{
+		//		vector<string> vec_scrname;
+		//		c_tree t_tree(menu_func_result[i].m_file_path, menu_func_result[i].m_file_name, cur_veh);
+		//		c_cel t_cel;
+		//		t_tree.get_vec_scrname(vec_scrname);
+		//		string all_buffer;
+		//		for (size_t i = 0; i < vec_scrname.size(); i++)
+		//		{
+		//			m_standard_group = c_data_stream_group(i+1, m_ecu_id,m_veid, vec_scrname[i], new_file_name);
+		//			all_buffer += m_standard_group.m_buffer;
+		//		}
+		//		m_func_map[new_file_name] = all_buffer;
+		//	}
+		//	m_standard_name = new_file_name;
+		//}
+		if (ft == ft_action)//动作测试
 		{
-			new_file_name = m_ecu_id + "_" + new_file_name ;
 			if (!m_func_map.count(new_file_name))
 			{
 				vector<string> vec_scrname;
@@ -334,44 +372,26 @@ c_ecu_variant::c_ecu_variant(string str_var, string ecu_id, map<string, string>&
 				string all_buffer;
 				for (size_t i = 0; i < vec_scrname.size(); i++)
 				{
-					m_ident_group = c_data_stream_group(i+1,m_ecu_id,m_veid, vec_scrname[i], new_file_name);
-					all_buffer += m_ident_group.m_buffer;
+					m_vec_action_test.push_back(c_action_test(i + 1, m_ecu_id, m_veid, vec_scrname[i], new_file_name));
+					all_buffer += m_vec_action_test[i].m_buffer;
 				}
 				m_func_map[new_file_name] = all_buffer;
 			}
-			m_ident_name = new_file_name;
+			m_action_name = new_file_name;
 		}
-		if (ft == ft_standard)
-		{
-			if (!m_func_map.count(new_file_name))
-			{
-				vector<string> vec_scrname;
-				c_tree t_tree(menu_func_result[i].m_file_path, menu_func_result[i].m_file_name, cur_veh);
-				c_cel t_cel;
-				t_tree.get_vec_scrname(vec_scrname);
-				string all_buffer;
-				for (size_t i = 0; i < vec_scrname.size(); i++)
-				{
-					m_standard_group = c_data_stream_group(i+1, m_ecu_id,m_veid, vec_scrname[i], new_file_name);
-					all_buffer += m_standard_group.m_buffer;
-				}
-				m_func_map[new_file_name] = all_buffer;
-			}
-			m_standard_name = new_file_name;
-		}
-		if (ft == ft_defauts)
-		{
-			new_file_name = ecu_id + "_dtc";
-			if (!m_func_map.count(new_file_name))
-			{
-				m_dtc = c_dtc(ecu_id,m_veid);
-				m_func_map[new_file_name]=m_dtc.m_all_buffer;
-			}
-		}
+		//if (ft == ft_defauts)
+		//{
+		//	new_file_name = ecu_id + "_dtc";
+		//	if (!m_func_map.count(new_file_name))
+		//	{
+		//		m_dtc = c_dtc(ecu_id,m_veid);
+		//		m_func_map[new_file_name]=m_dtc.m_all_buffer;
+		//	}
+		//}
 	}
 	m_buffer = "\"" + cur_veh.m_comtype + "," + cur_veh.m_moudle_name + "," + m_name + "," + m_ecu_id + ","
 		+ m_veid + "," + m_variant_name + "," + m_variant_descript + "," + m_re_coframe + "," + m_cmd1 + ","
-		+ m_cmd2 + "," + m_IDEMNEMOVALUE + "," + m_pos + "," + m_length + "," + m_dtc.m_file_name + ",";
+		+ m_cmd2 + "," + m_IDEMNEMOVALUE + "," + m_pos + "," + m_length + "," + m_dtc.m_file_name + "," + m_action_name + ",";
 	if (m_dtc.m_quality_buffer=="")
 	{
 		m_buffer = m_buffer + ",,";
@@ -404,6 +424,11 @@ vector<menu_info> c_ecu_variant::get_func_file( c_current_veh& cur_veh)
 	{
 		new_file_path = cur_veh.m_file_path + "\\" + m_name;
 		new_file_name = utils::get_menu_file_name(new_file_path);
+	}
+	if (new_file_name=="")
+	{
+		c_log::print("c_ecu_variant::%s don't have %s~~~~\n", cur_veh.m_file_path.c_str(), m_name.c_str());
+		return vector<menu_info>();
 	}
 	t_tree = c_tree(new_file_path, new_file_name, cur_veh);
 	vector<menu_info> menu_func_result;
@@ -1120,12 +1145,8 @@ string c_dtc::get_rec_type(string m_serunfrid_rec)
 	{
 		return "52";
 	}
-
-
 	return"00";
 }
-
-
 
 c_ecu_variant_group::c_ecu_variant_group(vector<string> vec_var_group_str,string ecu_id ,c_current_veh& cur_veh)
 {
@@ -1284,4 +1305,201 @@ c_service_parm::c_service_parm(string& str)
 		}
 		m_map_parm[key] = value;
 	}
+}
+
+c_action_test::c_action_test()
+{
+}
+
+c_action_test::c_action_test(int group_num, string& ecu_id, string& ecu_veid, string& scrname, string& file_name)
+{
+	vector<map<string, data_unit>> result;
+	sql_info sql = g_sqls.sql_map[st_action_test_scnnane];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(), ecu_id.c_str(), scrname.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test_group::get scnname failed! ecu_id : %s,scrname: %s", ecu_id.c_str(), scrname.c_str());
+		return;
+	}
+	m_SCNNAME = result[0]["SCNNAME"].data_value;
+	for (size_t i = 0; i < result.size(); i++)
+	{
+		if (m_SCNNAME != result[i]["SCNNAME"].data_value)
+		{
+			c_log::print("c_action_test_group::get m_SCNNAME Not Only One! ecu_id : %s,scrname: %s", ecu_id.c_str(), scrname.c_str());
+		}
+	}
+
+
+	sql = g_sqls.sql_map[st_action_test_TAMCTRLID];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(),ecu_id.c_str(), m_SCNNAME.c_str(), ecu_id.c_str(), m_SCNNAME.c_str(), ecu_id.c_str(), m_SCNNAME.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get TAMCTRLID failed! ecu_id: %s ,scnname : %s", ecu_id.c_str(), m_SCNNAME.c_str());
+		return;
+	}
+	else
+	{
+		if (result.size() != 3)
+		{
+			c_log::print("c_action_test::get TAMCTRLID special! ecu_id: %s ,scnname : %s", ecu_id.c_str(), m_SCNNAME.c_str());
+		}
+		for (size_t i = 0; i < result.size(); i++)
+		{
+			m_vec_sub.push_back(c_action_sub(result[i], ecu_veid));
+		}
+	}
+
+	m_buffer = utils::convert_1_byte(group_num) +","+ string("0x00,0x00\t\"") + scrname + "\"\n";
+	for (size_t i = 0; i < m_vec_sub.size(); i++)
+	{
+		m_buffer += utils::convert_1_byte(group_num)+","+utils::convert_2_byte(i + 1) + "\t" + m_vec_sub[i].m_buffer + "\n";
+	}
+}
+
+
+
+c_action_sub::c_action_sub()
+{
+}
+
+
+c_action_sub::c_action_sub(map<string, data_unit>& x_map, string veid)
+{
+	m_CTRLSTATUSPARNAME = x_map["CTRLSTATUSPARNAME"].data_value;
+	m_SERVNAME = x_map["SERVNAME"].data_value;
+	m_SUBSERVICE = x_map["SUBSERVICE"].data_value;
+	m_TAMCTRLID = x_map["TAMCTRLID"].data_value;
+	m_SERVICE = x_map["SERVICE"].data_value;
+	m_ISERVPARVALUE = x_map["ISERVPARVALUE"].data_value;
+
+	vector<map<string, data_unit>> result;
+	sql_info sql;
+	sql = g_sqls.sql_map[st_action_test_serid];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(), veid.c_str(),m_SERVICE.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get SERID failed! ve_id: %s ,m_SERVNAME : %s\n", veid.c_str(), m_SERVNAME.c_str(), m_SERVICE.c_str());
+	}
+	string ser_id = result[0]["SERID"].data_value;
+
+	sql = g_sqls.sql_map[st_action_test_serunid];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(),veid.c_str(), ser_id.c_str(), m_SUBSERVICE.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get SERID failed! ve_id: %s ,ser_id: %s , m_SUBSERVICE : %s\n", veid.c_str(), ser_id.c_str(), m_SUBSERVICE.c_str());
+		return;
+	}
+	string ser_unid = result[0]["SERUNID"].data_value;
+
+	sql = g_sqls.sql_map[st_action_test_serunfrid];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(), ser_unid.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get SERID failed! ser_unid: %s\n", ser_unid.c_str());
+	}
+	string ser_req_id = result[0]["SERUNFRID"].data_value;
+	string ser_rec_id = result[1]["SERUNFRID"].data_value;
+
+
+	sql = g_sqls.sql_map[st_action_test_req_info];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(), ser_req_id.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get req_info failed! ser_unid: %s\n", ser_req_id.c_str());
+	}
+	string cmd_head;
+	string req_par_id;
+	for (size_t i = 0; i < result.size(); i++)
+	{
+		if (result[i]["ISPVALUE"].data_value != "NULL")
+		{
+			cmd_head += result[i]["ISPVALUE"].data_value;
+		}
+		else
+		{
+			req_par_id = result[i]["PARID"].data_value;
+		}
+	}
+	if (req_par_id=="")
+	{
+		c_log::print("c_action_test::get req_par_id failed! ser_unid: %s\n", ser_req_id.c_str());
+		return;
+	}
+	sql = g_sqls.sql_map[st_action_test_req_stvalue];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(), req_par_id.c_str(), m_ISERVPARVALUE.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get req_cmd failed! req_par_id: %s, m_SUBSERVICE :%s\n", ser_req_id.c_str(), m_ISERVPARVALUE.c_str());
+	}
+	else
+	{
+		m_req_cmd = cmd_head + result[0]["STAVALUE"].data_value;
+	}
+
+	sql = g_sqls.sql_map[st_action_test_rec_info];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(), ser_rec_id.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get req_cmd failed! ser_rec_id: %s\n", ser_rec_id.c_str());
+	}
+	string rec_parid;
+	for (size_t i = 0; i < result.size(); i++)
+	{
+		if (result[i]["PARSNAME"].data_value == m_CTRLSTATUSPARNAME)
+		{
+			m_rec_cmd_pos = result[i]["ISPBYTEPOS"].data_value;
+			m_rec_cmd_len = result[i]["ADDBYTELENGTH"].data_value;
+			rec_parid = result[i]["PARID"].data_value;
+		}
+	}
+	sql = g_sqls.sql_map[st_action_test_rec_stvalue];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(), rec_parid.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get rec_cmd failed! req_par_id: %s, rec_parid :%s\n", rec_parid.c_str());
+	}
+	action_rec_info xx;
+	for (size_t i = 0; i < result.size(); i++)
+	{
+		xx.rec_stat_name = result[i]["STASNAME"].data_value;
+		xx.rec_var_cmd = result[i]["STAVALUE"].data_value;
+		m_vec_rec_info.push_back(xx);
+	}
+
+	sql = g_sqls.sql_map[st_action_test_TAMSTATUSDISCVALNAME];
+	result = fire_bird::get_sql_result(sql.name, sql.sql.c_str(), m_TAMCTRLID.c_str());
+	if (!result.size())
+	{
+		c_log::print("c_action_test::get rec_cmd last info failed! m_TAMCTRLID: %s\n", m_TAMCTRLID.c_str());
+	}
+	for (size_t i = 0; i < m_vec_rec_info.size(); i++)
+	{
+		for (size_t j = 0; j < result.size(); j++)
+		{
+			if (m_vec_rec_info[i].rec_stat_name == result[j]["TAMSTATUSDISCVALNAME"].data_value)
+			{
+				m_vec_rec_info[i].rec_label = result[j]["TAMSTATUSDISCVALLABEL"].data_value;
+				c_txt::insert_map(m_vec_rec_info[i].rec_label);
+				m_vec_rec_info[i].rec_label = c_txt::get_str_from_map(m_vec_rec_info[i].rec_label);
+			}
+		}
+	}
+
+	string rec_buffer = utils::convert_1_byte(stoi(m_rec_cmd_pos)) + "\t" + utils::convert_1_byte(stoi(m_rec_cmd_len)) + "\t";
+	for (size_t i = 0; i < m_vec_rec_info.size(); i++)
+	{
+		rec_buffer += utils::convert_2_byte(stoi(m_vec_rec_info[i].rec_var_cmd)) + "," + m_vec_rec_info[i].rec_label;
+		if (i!= m_vec_rec_info.size())
+		{
+			rec_buffer += "\t";
+		}
+	}
+
+	m_buffer += string("\"") + m_SERVNAME + "\"\t" + m_req_cmd + "\t" + rec_buffer;
+}
+
+void c_action_sub::get_buffer()
+{
+	
 }

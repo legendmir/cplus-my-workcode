@@ -16,11 +16,6 @@ public:
 	static vector<string>split_buffer(string str);
 	static vector<string> split(string& ori_string, char sig);
 
-
-
-
-
-
 public:
 	static const char* m_lang_sig;
 	static const char* m_trans_path;
